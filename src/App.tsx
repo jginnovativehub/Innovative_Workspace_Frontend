@@ -1,0 +1,666 @@
+import React, { useState, useEffect } from 'react';
+import confetti from 'canvas-confetti';
+import { 
+  User, Project, Milestone, Task, WeeklyReport, DashboardMetrics, 
+  LeaderboardUser, Badge, NotificationItem, AuditEvent, SystemConfig 
+} from './types';
+import { api } from './api';
+import { Navbar } from './components/Navbar';
+import { CeoDashboard } from './components/dashboards/CeoDashboard';
+import { CooDashboard } from './components/dashboards/CooDashboard';
+import { EmployeeDashboard } from './components/dashboards/EmployeeDashboard';
+
+import { LeaderboardModal } from './components/LeaderboardModal';
+import { ReviewInboxModal } from './components/ReviewInboxModal';
+import { ProjectWizardModal } from './components/ProjectWizardModal';
+import { BlockerModal } from './components/BlockerModal';
+import { WeeklyReportModal } from './components/WeeklyReportModal';
+import { EditProjectModal } from './components/EditProjectModal';
+import { DeleteProjectModal } from './components/DeleteProjectModal';
+import { LogoutModal } from './components/LogoutModal';
+import { LoginPage } from './components/LoginPage';
+
+import { 
+  Shield, Crown, Settings, User as UserIcon, RefreshCw, 
+  Sparkles, ExternalLink, Calendar, CheckCircle2, ShieldAlert
+} from 'lucide-react';
+import { toast } from './context/ToastContext';
+
+export function App() {
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isInitializing, setIsInitializing] = useState(true);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [weeklyReports, setWeeklyReports] = useState<WeeklyReport[]>([]);
+  const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardUser[]>([]);
+  const [badges, setBadges] = useState<Badge[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [auditEvents, setAuditEvents] = useState<AuditEvent[]>([]);
+  const [systemConfig, setSystemConfig] = useState<SystemConfig | null>(null);
+  const [reviewInboxData, setReviewInboxData] = useState<any>(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Modals
+  const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
+  const [isReviewInboxOpen, setIsReviewInboxOpen] = useState(false);
+  const [isProjectWizardOpen, setIsProjectWizardOpen] = useState(false);
+  const [isBlockerModalOpen, setIsBlockerModalOpen] = useState(false);
+  const [selectedTaskForBlocker, setSelectedTaskForBlocker] = useState<Task | null>(null);
+  const [isWeeklyReportModalOpen, setIsWeeklyReportModalOpen] = useState(false);
+  const [selectedReportForEdit, setSelectedReportForEdit] = useState<WeeklyReport | null>(null);
+  const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
+  const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+
+  // Single Action Modals
+  const [milestoneToSubmit, setMilestoneToSubmit] = useState<Milestone | null>(null);
+  const [evidenceNotes, setEvidenceNotes] = useState('');
+  const [evidenceUrl, setEvidenceUrl] = useState('');
+
+  const [milestoneToReview, setMilestoneToReview] = useState<Milestone | null>(null);
+  const [reviewComments, setReviewComments] = useState('');
+
+  const [taskForScheduleChange, setTaskForScheduleChange] = useState<Task | null>(null);
+  const [newDueDateInput, setNewDueDateInput] = useState('');
+  const [scheduleReasonInput, setScheduleReasonInput] = useState('');
+
+  // Initial boot: Check stored session or open Login Page first
+  useEffect(() => {
+    const checkExistingSession = async () => {
+      const token = localStorage.getItem('jg_auth_token');
+      if (token) {
+        try {
+          const user = await api.getCurrentUser();
+          if (user.role === 'ADMIN') {
+            // Admin accounts belong to the dedicated Admin Portal
+            api.logout();
+            setCurrentUser(null);
+            setIsInitializing(false);
+            return;
+          }
+          setCurrentUser(user);
+          await loadAllData(user);
+        } catch (err) {
+          console.error('Session expired or invalid:', err);
+          api.logout();
+          setCurrentUser(null);
+        }
+      } else {
+        setCurrentUser(null);
+      }
+      setIsInitializing(false);
+    };
+    checkExistingSession();
+  }, []);
+
+  // Real-Time Notification Stream & Fast Polling Synchronization
+  useEffect(() => {
+    if (!currentUser) return;
+
+    // 1. Real-Time SSE Stream
+    const closeStream = api.createNotificationStream((newNotif: NotificationItem) => {
+      setNotifications(prev => {
+        if (prev.some(n => n.id === newNotif.id)) return prev;
+        toast.info(newNotif.body, newNotif.title);
+        return [newNotif, ...prev];
+      });
+    });
+
+    // 2. 5-Second polling sync to keep multi-tab data fresh
+    const pollInterval = setInterval(async () => {
+      try {
+        const freshNotifs = await api.getNotifications();
+        setNotifications(freshNotifs);
+      } catch (err) {
+        // Continue silently
+      }
+    }, 5000);
+
+    return () => {
+      closeStream();
+      clearInterval(pollInterval);
+    };
+  }, [currentUser]);
+
+  const handleLoginSuccess = async (user: User) => {
+    if (user.role === 'ADMIN') {
+      toast.info('Administrator accounts must use the dedicated Admin Portal (/admin). Redirecting...', 'Dedicated Admin Console');
+      setTimeout(() => {
+        window.location.href = '/admin';
+      }, 1000);
+      return;
+    }
+    setCurrentUser(user);
+    await loadAllData(user);
+  };
+
+  const handleLogout = () => {
+    api.logout();
+    setCurrentUser(null);
+    setProjects([]);
+    setTasks([]);
+    setWeeklyReports([]);
+  };
+
+  const loadAllData = async (user: User) => {
+    try {
+      const [
+        projsData, tasksData, reportsData, metricsData, notifsData,
+        lbData, badgesData, allUsersData, cfgData
+      ] = await Promise.all([
+        api.getProjects(),
+        api.getTasks(),
+        api.getWeeklyReports(),
+        api.getDashboardMetrics(),
+        api.getNotifications(),
+        api.getLeaderboard(),
+        api.getBadges(),
+        api.getUsers(),
+        api.getSystemConfig()
+      ]);
+
+      setProjects(projsData);
+      if (projsData.length > 0) {
+        setSelectedProjectId(prev => prev || projsData[0].id);
+      }
+      setTasks(tasksData);
+      setWeeklyReports(reportsData);
+      setMetrics(metricsData);
+      setNotifications(notifsData);
+      setLeaderboard(lbData);
+      setBadges(badgesData);
+      setUsers(allUsersData);
+      setSystemConfig(cfgData);
+
+      const inbox = await api.getReviewInbox().catch(() => null);
+      if (inbox) setReviewInboxData(inbox);
+
+      const audits = await api.getAuditEvents().catch(() => []);
+      setAuditEvents(audits);
+    } catch (err) {
+      console.error('Error loading data:', err);
+    }
+  };
+
+  const handleRefreshAll = async () => {
+    if (!currentUser) return;
+    setRefreshing(true);
+    try {
+      await loadAllData(currentUser);
+      toast.success('System data synchronized successfully.', 'Refreshed');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to refresh data', 'Refresh Error');
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+
+  const triggerCelebration = () => {
+    confetti({
+      particleCount: 80,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+  };
+
+  // Milestone actions
+  const handleMilestoneSubmitReview = async () => {
+    if (!milestoneToSubmit || !evidenceNotes) {
+      toast.warning('Acceptance evidence notes are required for review verification!', 'Evidence Required');
+      return;
+    }
+    await api.submitMilestoneForReview(milestoneToSubmit.id, evidenceNotes, evidenceUrl);
+    setMilestoneToSubmit(null);
+    setEvidenceNotes('');
+    setEvidenceUrl('');
+    triggerCelebration();
+    toast.success(`Milestone stage ${milestoneToSubmit.sequence} submitted for verification gate!`, 'Submitted For Review');
+    if (currentUser) loadAllData(currentUser);
+  };
+
+  const handleMilestoneReviewDecision = async (decision: 'APPROVED' | 'CHANGES_REQUESTED') => {
+    if (!milestoneToReview || !reviewComments) {
+      toast.warning('Reviewer decision comments are mandatory!', 'Audit Notes Required');
+      return;
+    }
+    await api.reviewMilestone(milestoneToReview.id, decision, reviewComments);
+    setMilestoneToReview(null);
+    setReviewComments('');
+    if (decision === 'APPROVED') {
+      triggerCelebration();
+      toast.success('Milestone deliverable approved & acceptance completed!', 'Gate Approved');
+    } else {
+      toast.warning('Requested revision notes returned to project owner.', 'Changes Requested');
+    }
+    if (currentUser) loadAllData(currentUser);
+  };
+
+  // Task actions
+  const handleTaskSubmitReview = async (taskId: number) => {
+    await api.submitTaskForReview(taskId, 'Deliverable completed and ready for acceptance review.');
+    triggerCelebration();
+    toast.success('Task submitted for review (+40 XP)!', 'Task Verification');
+    if (currentUser) loadAllData(currentUser);
+  };
+
+  const handleScheduleChangeSubmit = async () => {
+    if (!taskForScheduleChange || !newDueDateInput || !scheduleReasonInput) {
+      toast.warning('New due date and justification are required!', 'Incomplete Request');
+      return;
+    }
+    await api.requestScheduleChange(taskForScheduleChange.id, newDueDateInput, scheduleReasonInput);
+    setTaskForScheduleChange(null);
+    setNewDueDateInput('');
+    setScheduleReasonInput('');
+    toast.success('Schedule extension request recorded! Original due date preserved in audit history.', 'Schedule Request Logged');
+    if (currentUser) loadAllData(currentUser);
+  };
+
+  // Weekly report save
+  const handleSaveWeeklyReport = async (data: any) => {
+    await api.saveWeeklyReport(data);
+    triggerCelebration();
+    if (currentUser) loadAllData(currentUser);
+  };
+
+  // Review inbox actions
+  const handleInboxReviewMilestone = async (id: number, decision: 'APPROVED' | 'CHANGES_REQUESTED', comments: string) => {
+    await api.reviewMilestone(id, decision, comments);
+    if (decision === 'APPROVED') triggerCelebration();
+    if (currentUser) loadAllData(currentUser);
+  };
+
+  const handleInboxReviewTask = async (id: number, decision: 'APPROVED' | 'CHANGES_REQUESTED', comments: string) => {
+    await api.reviewTask(id, decision, comments);
+    if (decision === 'APPROVED') triggerCelebration();
+    if (currentUser) loadAllData(currentUser);
+  };
+
+  const handleInboxReviewReport = async (id: number, decision: 'APPROVED' | 'CHANGES_REQUESTED', comments: string) => {
+    await api.reviewWeeklyReport(id, decision, comments);
+    if (decision === 'APPROVED') triggerCelebration();
+    if (currentUser) loadAllData(currentUser);
+  };
+
+  const handleInboxReviewSchedule = async (id: number, status: 'APPROVED' | 'REJECTED', notes: string) => {
+    await api.reviewScheduleRequest(id, status, notes);
+    if (currentUser) loadAllData(currentUser);
+  };
+
+  // Admin actions
+  const handleAdminCreateUser = async (data: any) => {
+    await api.createUser(data);
+    if (currentUser) loadAllData(currentUser);
+  };
+
+  const handleAdminUpdateUser = async (id: number, data: any) => {
+    await api.updateUser(id, data);
+    if (currentUser) loadAllData(currentUser);
+  };
+
+  const handleAdminArchive = async (id: number) => {
+    await api.archiveProject(id);
+    if (currentUser) loadAllData(currentUser);
+  };
+
+  const handleAdminRestore = async (id: number) => {
+    await api.restoreProject(id);
+    if (currentUser) loadAllData(currentUser);
+  };
+
+  const handleAdminDelete = async (id: number, reason: string) => {
+    await api.deleteProject(id, reason);
+    if (currentUser) loadAllData(currentUser);
+  };
+
+  const handleSaveProject = async (id: number | string, data: any) => {
+    await api.updateProject(id, data);
+    setProjectToEdit(null);
+    toast.success('Project plan updated successfully!', 'Project Updated');
+    if (currentUser) loadAllData(currentUser);
+  };
+
+  const handleDeleteProject = async (id: number | string, reason: string) => {
+    await api.deleteProject(id, reason);
+    setProjectToDelete(null);
+    toast.success('Project and associated milestones/tasks deleted.', 'Project Removed');
+    if (currentUser) loadAllData(currentUser);
+  };
+
+  const handleAdminUpdateConfig = async (data: any) => {
+    await api.updateSystemConfig(data);
+    if (currentUser) loadAllData(currentUser);
+  };
+
+  const currentProject = projects.find(p => String(p.id) === String(selectedProjectId)) || projects[0] || null;
+
+  if (isInitializing) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center text-slate-400">
+        <div className="flex items-center space-x-2">
+          <RefreshCw className="w-5 h-5 animate-spin text-indigo-500" />
+          <span>Connecting to JG Innovative Hub Platform...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!currentUser) {
+    return <LoginPage onLoginSuccess={handleLoginSuccess} />;
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+      {/* Top Navbar HUD */}
+      <Navbar
+        currentUser={currentUser}
+        onOpenLeaderboard={() => setIsLeaderboardOpen(true)}
+        notifications={notifications}
+        onMarkNotificationRead={async (id) => {
+          await api.markNotificationRead(id);
+          setNotifications(notifications.map(n => n.id === id ? { ...n, readAt: new Date().toISOString() } : n));
+        }}
+        onMarkAllNotificationsRead={async () => {
+          await api.markAllNotificationsRead();
+          setNotifications(notifications.map(n => ({ ...n, readAt: new Date().toISOString() })));
+        }}
+        onLogout={() => setIsLogoutModalOpen(true)}
+        onRefreshAll={handleRefreshAll}
+        refreshing={refreshing}
+      />
+
+      
+
+      {/* Main Workspace Render - Strictly Gated by currentUser.role */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-1">
+        {/* 1. CEO STRATEGIC PORTFOLIO - Visible ONLY to CEO */}
+        {currentUser.role === 'CEO' && metrics && (
+          <CeoDashboard
+            currentUser={currentUser}
+            projects={projects}
+            metrics={metrics}
+            weeklyReports={weeklyReports}
+            tasks={tasks}
+            onOpenProjectWizard={() => setIsProjectWizardOpen(true)}
+            onOpenWeeklyReportModal={(rep) => {
+              setSelectedReportForEdit(rep);
+              setIsWeeklyReportModalOpen(true);
+            }}
+            onSelectMilestoneForReview={(m) => setMilestoneToReview(m)}
+            onCreateUser={handleAdminCreateUser}
+            onEditProject={(p) => setProjectToEdit(p)}
+            onDeleteProject={(p) => setProjectToDelete(p)}
+          />
+        )}
+
+        {/* 2. COO OPERATIONS COCKPIT - Visible ONLY to COO */}
+        {currentUser.role === 'COO' && metrics && (
+          <CooDashboard
+            currentUser={currentUser}
+            projects={projects}
+            metrics={metrics}
+            tasks={tasks}
+            weeklyReports={weeklyReports}
+            users={users}
+            reviewInboxData={reviewInboxData || { pendingMilestones: [], pendingTasks: [], pendingReports: [], pendingSchedules: [], totalBacklog: 0 }}
+            onOpenProjectWizard={() => setIsProjectWizardOpen(true)}
+            onOpenReviewInbox={() => setIsReviewInboxOpen(true)}
+            onOpenWeeklyReportModal={(rep) => {
+              setSelectedReportForEdit(rep);
+              setIsWeeklyReportModalOpen(true);
+            }}
+            onReviewWeeklyReport={handleInboxReviewReport}
+            onReviewSchedule={handleInboxReviewSchedule}
+            onCreateUser={handleAdminCreateUser}
+            onEditProject={(p) => setProjectToEdit(p)}
+            onDeleteProject={(p) => setProjectToDelete(p)}
+          />
+        )}
+
+        {/* 3. CONTRIBUTOR (USER) DASHBOARD - Visible to EMPLOYEE / Contributor */}
+        {currentUser.role !== 'CEO' && currentUser.role !== 'COO' && (
+          <EmployeeDashboard
+            currentUser={currentUser}
+            projects={projects}
+            selectedProject={currentProject}
+            tasks={tasks}
+            weeklyReports={weeklyReports}
+            onSelectProject={(id) => setSelectedProjectId(id)}
+            onOpenBlockerModal={(t) => {
+              setSelectedTaskForBlocker(t);
+              setIsBlockerModalOpen(true);
+            }}
+            onOpenScheduleModal={(t) => {
+              setTaskForScheduleChange(t);
+              setNewDueDateInput(t.dueDate);
+            }}
+            onSubmitTaskForReview={handleTaskSubmitReview}
+            onSubmitMilestoneForReview={(m) => setMilestoneToSubmit(m)}
+            onOpenWeeklyReportModal={(rep) => {
+              setSelectedReportForEdit(rep);
+              setIsWeeklyReportModalOpen(true);
+            }}
+            onOpenLeaderboard={() => setIsLeaderboardOpen(true)}
+          />
+        )}
+      </main>
+
+      {/* MODAL: SUBMIT MILESTONE FOR REVIEW */}
+      {milestoneToSubmit && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+          <div className="bg-slate-900 border border-indigo-500/30 rounded-2xl p-6 max-w-lg w-full space-y-4 shadow-2xl">
+            <h3 className="font-bold text-base text-white">Submit Milestone for Verification Gate</h3>
+            <p className="text-xs text-slate-300">
+              Submitting Stage {milestoneToSubmit.sequence}: <strong className="text-white">{milestoneToSubmit.title}</strong>
+            </p>
+            <div className="bg-slate-950 p-3 rounded-lg border border-slate-800 text-xs">
+              <span className="text-indigo-400 font-bold block mb-0.5">Required Acceptance Criteria:</span>
+              <p className="text-slate-300 font-mono">{milestoneToSubmit.acceptanceCriteria}</p>
+            </div>
+            <div>
+              <label className="text-xs font-bold text-slate-300 block mb-1">
+                Evidence Notes & Verification Test Results *
+              </label>
+              <textarea
+                rows={3}
+                required
+                value={evidenceNotes}
+                onChange={e => setEvidenceNotes(e.target.value)}
+                placeholder="Detail verification numbers, test logs, simulation results..."
+                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-bold text-slate-300 block mb-1">
+                Deliverable Document / Repository URL
+              </label>
+              <input
+                type="url"
+                value={evidenceUrl}
+                onChange={e => setEvidenceUrl(e.target.value)}
+                placeholder="https://docs.jginnovative.internal/..."
+                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white"
+              />
+            </div>
+            <div className="flex justify-end space-x-2 pt-2">
+              <button onClick={() => setMilestoneToSubmit(null)} className="px-3 py-1.5 text-xs text-slate-400">Cancel</button>
+              <button
+                onClick={handleMilestoneSubmitReview}
+                className="px-5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-md"
+              >
+                Submit for Verification Gate (+60 XP)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: CONDUCT MILESTONE REVIEW */}
+      {milestoneToReview && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+          <div className="bg-slate-900 border border-amber-500/30 rounded-2xl p-6 max-w-lg w-full space-y-4 shadow-2xl">
+            <h3 className="font-bold text-base text-white">Milestone Verification Gate Decision</h3>
+            <p className="text-xs text-slate-300">
+              Stage {milestoneToReview.sequence}: <strong className="text-white">{milestoneToReview.title}</strong>
+            </p>
+            {milestoneToReview.evidenceNotes && (
+              <div className="bg-emerald-950/20 p-3 rounded-lg border border-emerald-500/30 text-xs">
+                <span className="text-emerald-400 font-bold block mb-0.5">Submitted Evidence:</span>
+                <p className="text-emerald-200">{milestoneToReview.evidenceNotes}</p>
+              </div>
+            )}
+            <div>
+              <label className="text-xs font-bold text-slate-300 block mb-1">
+                Review Decision Comments (Mandatory for audit):
+              </label>
+              <textarea
+                rows={3}
+                required
+                value={reviewComments}
+                onChange={e => setReviewComments(e.target.value)}
+                placeholder="Enter audit evaluation feedback..."
+                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white"
+              />
+            </div>
+            <div className="flex justify-end space-x-2 pt-2">
+              <button onClick={() => setMilestoneToReview(null)} className="px-3 py-1.5 text-xs text-slate-400">Cancel</button>
+              <button
+                onClick={() => handleMilestoneReviewDecision('CHANGES_REQUESTED')}
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30"
+              >
+                Request Changes
+              </button>
+              <button
+                onClick={() => handleMilestoneReviewDecision('APPROVED')}
+                className="px-5 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md"
+              >
+                Approve & Complete (+{milestoneToReview.xpReward} XP)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: REQUEST SCHEDULE CHANGE */}
+      {taskForScheduleChange && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-md w-full space-y-4 shadow-2xl">
+            <h3 className="font-bold text-base text-white">Request Schedule Change</h3>
+            <p className="text-xs text-slate-300">
+              Task: <strong className="text-white">{taskForScheduleChange.title}</strong>
+            </p>
+            <div className="bg-slate-950 p-2.5 rounded-lg border border-slate-800 text-xs text-slate-400">
+              Original Due Date: <strong className="text-slate-200">{taskForScheduleChange.originalDueDate}</strong> (Retained in History)
+            </div>
+            <div>
+              <label className="text-xs font-bold text-slate-300 block mb-1">Proposed New Due Date *</label>
+              <input
+                type="date"
+                value={newDueDateInput}
+                onChange={e => setNewDueDateInput(e.target.value)}
+                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-mono"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-bold text-slate-300 block mb-1">Schedule Adjustment Rationale *</label>
+              <textarea
+                rows={3}
+                value={scheduleReasonInput}
+                onChange={e => setScheduleReasonInput(e.target.value)}
+                placeholder="Explain justification for deadline change..."
+                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white"
+              />
+            </div>
+            <div className="flex justify-end space-x-2 pt-2">
+              <button onClick={() => setTaskForScheduleChange(null)} className="px-3 py-1.5 text-xs text-slate-400">Cancel</button>
+              <button
+                onClick={handleScheduleChangeSubmit}
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white"
+              >
+                Submit Schedule Request
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODALS */}
+      <LeaderboardModal
+        isOpen={isLeaderboardOpen}
+        onClose={() => setIsLeaderboardOpen(false)}
+        leaderboard={leaderboard}
+        badges={badges}
+        currentUser={currentUser}
+      />
+
+      <ReviewInboxModal
+        isOpen={isReviewInboxOpen}
+        onClose={() => setIsReviewInboxOpen(false)}
+        inboxData={reviewInboxData || { pendingMilestones: [], pendingTasks: [], pendingReports: [], pendingSchedules: [], totalBacklog: 0 }}
+        onReviewMilestone={handleInboxReviewMilestone}
+        onReviewTask={handleInboxReviewTask}
+        onReviewWeeklyReport={handleInboxReviewReport}
+        onReviewSchedule={handleInboxReviewSchedule}
+      />
+
+      <ProjectWizardModal
+        isOpen={isProjectWizardOpen}
+        onClose={() => setIsProjectWizardOpen(false)}
+        users={users}
+        onCreateProject={async (data) => {
+          await api.createProject(data);
+          triggerCelebration();
+          if (currentUser) loadAllData(currentUser);
+        }}
+      />
+
+      <BlockerModal
+        isOpen={isBlockerModalOpen}
+        onClose={() => setIsBlockerModalOpen(false)}
+        task={selectedTaskForBlocker}
+        onSubmitBlocker={async (taskId, data) => {
+          await api.reportBlocker(taskId, data);
+          if (currentUser) loadAllData(currentUser);
+        }}
+      />
+
+      <WeeklyReportModal
+        isOpen={isWeeklyReportModalOpen}
+        onClose={() => setIsWeeklyReportModalOpen(false)}
+        report={selectedReportForEdit}
+        currentUser={currentUser}
+        onSaveReport={handleSaveWeeklyReport}
+      />
+
+      <EditProjectModal
+        isOpen={!!projectToEdit}
+        project={projectToEdit}
+        onClose={() => setProjectToEdit(null)}
+        onSaveProject={handleSaveProject}
+      />
+
+      <DeleteProjectModal
+        isOpen={!!projectToDelete}
+        project={projectToDelete}
+        onClose={() => setProjectToDelete(null)}
+        onConfirmDelete={handleDeleteProject}
+      />
+
+      <LogoutModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => setIsLogoutModalOpen(false)}
+        onConfirmLogout={() => {
+          setIsLogoutModalOpen(false);
+          handleLogout();
+        }}
+        currentUser={currentUser}
+      />
+    </div>
+  );
+}
+
+export default App;
