@@ -243,3 +243,41 @@ export interface SystemConfig {
   retentionDays: number;
 }
 
+export interface PersonalTask {
+  id: string | number;
+  title: string;
+  status: 'TODO' | 'IN_PROGRESS' | 'DONE';
+  priority?: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  dueDate?: string;
+}
+
+export interface PersonalMilestone {
+  id: string | number;
+  title: string;
+  dueDate?: string;
+  completed: boolean;
+}
+
+export interface PersonalProject {
+  id: number;
+  userId: number;
+  title: string;
+  description?: string;
+  category?: string;
+  priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  status: 'PLANNING' | 'IN_PROGRESS' | 'ON_HOLD' | 'COMPLETED';
+  startDate?: string;
+  targetDate?: string;
+  milestones: PersonalMilestone[];
+  tasks: PersonalTask[];
+  notes?: string;
+  completedMilestones?: number;
+  completedTasks?: number;
+  totalMilestones?: number;
+  totalTasks?: number;
+  progressPercentage?: number;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+

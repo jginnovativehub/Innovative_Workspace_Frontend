@@ -31,7 +31,6 @@ interface ToastContextType {
 
 const ToastContext = createContext<ToastContextType | null>(null);
 
-// Global reference for standalone invocations
 let globalToastHandler: {
   showToast: (type: ToastType, message: string, title?: string, duration?: number) => void;
   confirm: (options: ConfirmOptions) => Promise<boolean>;
@@ -60,7 +59,7 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const showToast = useCallback((type: ToastType, message: string, title?: string, duration = 4500) => {
     const id = `${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
     const newToast: ToastItem = { id, type, message, title, duration };
-    setToasts(prev => [...prev.slice(-4), newToast]); // keep max 5 toasts
+    setToasts(prev => [...prev.slice(-4), newToast]);
 
     if (duration > 0) {
       setTimeout(() => {
@@ -87,18 +86,17 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   useEffect(() => {
     globalToastHandler = { showToast, confirm };
 
-    // Safely override native window.alert to intercept any native popups
     const originalAlert = window.alert;
     window.alert = (msg: any) => {
       const text = typeof msg === 'string' ? msg : JSON.stringify(msg);
       if (text.toLowerCase().includes('fail') || text.toLowerCase().includes('error')) {
-        error(text, 'System Notice');
-      } else if (text.toLowerCase().includes('success') || text.toLowerCase().includes('complete') || text.toLowerCase().includes('provisioned')) {
-        success(text, 'Operation Confirmed');
+        error(text, 'Notice');
+      } else if (text.toLowerCase().includes('success') || text.toLowerCase().includes('complete') || text.toLowerCase().includes('provisioned') || text.toLowerCase().includes('deleted')) {
+        success(text, 'Confirmed');
       } else if (text.toLowerCase().includes('mandatory') || text.toLowerCase().includes('required')) {
-        warning(text, 'Policy Notice');
+        warning(text, 'Notice');
       } else {
-        info(text, 'System Notification');
+        info(text, 'Notification');
       }
     };
 
@@ -124,30 +122,22 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         {toasts.map(t => (
           <div
             key={t.id}
-            className={`pointer-events-auto transform transition-all duration-300 ease-out flex items-start p-4 rounded-2xl border shadow-2xl backdrop-blur-xl relative overflow-hidden animate-in slide-in-from-top-2 fade-in ${
+            className={`pointer-events-auto transform transition-all duration-300 ease-out flex items-start p-4 rounded-xl border shadow-lg bg-white relative overflow-hidden animate-in slide-in-from-top-2 fade-in ${
               t.type === 'success'
-                ? 'bg-slate-900/95 border-emerald-500/40 text-emerald-100 shadow-emerald-950/40 ring-1 ring-emerald-500/20' :
+                ? 'border-emerald-300 text-gray-900 border-l-4 border-l-emerald-600' :
               t.type === 'error'
-                ? 'bg-slate-900/95 border-rose-500/40 text-rose-100 shadow-rose-950/40 ring-1 ring-rose-500/20' :
+                ? 'border-rose-300 text-gray-900 border-l-4 border-l-rose-600' :
               t.type === 'warning'
-                ? 'bg-slate-900/95 border-amber-500/40 text-amber-100 shadow-amber-950/40 ring-1 ring-amber-500/20' :
-                'bg-slate-900/95 border-indigo-500/40 text-indigo-100 shadow-indigo-950/40 ring-1 ring-indigo-500/20'
+                ? 'border-amber-300 text-gray-900 border-l-4 border-l-amber-600' :
+                'border-blue-300 text-gray-900 border-l-4 border-l-blue-600'
             }`}
           >
-            {/* Top vibrant gradient glow */}
-            <div className={`absolute top-0 left-0 right-0 h-[2px] ${
-              t.type === 'success' ? 'bg-gradient-to-r from-emerald-500 via-teal-400 to-transparent' :
-              t.type === 'error' ? 'bg-gradient-to-r from-rose-500 via-red-400 to-transparent' :
-              t.type === 'warning' ? 'bg-gradient-to-r from-amber-500 via-yellow-400 to-transparent' :
-              'bg-gradient-to-r from-indigo-500 via-cyan-400 to-transparent'
-            }`} />
-
-            {/* Glowing Icon Container */}
-            <div className={`p-2 rounded-xl shrink-0 mr-3 mt-0.5 shadow-sm ${
-              t.type === 'success' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
-              t.type === 'error' ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' :
-              t.type === 'warning' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
-              'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30'
+            {/* Icon Container */}
+            <div className={`p-1.5 rounded-lg shrink-0 mr-3 mt-0.5 ${
+              t.type === 'success' ? 'bg-emerald-50 text-emerald-600' :
+              t.type === 'error' ? 'bg-rose-50 text-rose-600' :
+              t.type === 'warning' ? 'bg-amber-50 text-amber-600' :
+              'bg-blue-50 text-blue-600'
             }`}>
               {t.type === 'success' && <CheckCircle2 className="w-5 h-5" />}
               {t.type === 'error' && <AlertCircle className="w-5 h-5" />}
@@ -158,25 +148,25 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
             {/* Body */}
             <div className="flex-1 pr-2 space-y-0.5">
               <div className="flex items-center space-x-2">
-                <span className={`text-[10px] font-black font-mono tracking-wider uppercase px-1.5 py-0.5 rounded border ${
-                  t.type === 'success' ? 'bg-emerald-950/70 text-emerald-300 border-emerald-500/40' :
-                  t.type === 'error' ? 'bg-rose-950/70 text-rose-300 border-rose-500/40' :
-                  t.type === 'warning' ? 'bg-amber-950/70 text-amber-300 border-amber-500/40' :
-                  'bg-indigo-950/70 text-indigo-300 border-indigo-500/40'
+                <span className={`text-[10px] font-bold font-mono tracking-wider uppercase px-1.5 py-0.5 rounded border ${
+                  t.type === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                  t.type === 'error' ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                  t.type === 'warning' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                  'bg-blue-50 text-blue-700 border-blue-200'
                 }`}>
-                  {t.type === 'success' ? 'System Confirmed' :
-                   t.type === 'error' ? 'System Alert' :
-                   t.type === 'warning' ? 'Policy Notice' : 'System Notice'}
+                  {t.type === 'success' ? 'Confirmed' :
+                   t.type === 'error' ? 'Alert' :
+                   t.type === 'warning' ? 'Notice' : 'System'}
                 </span>
-                {t.title && <span className="text-xs font-bold text-white tracking-tight">{t.title}</span>}
+                {t.title && <span className="text-xs font-bold text-gray-900 tracking-tight">{t.title}</span>}
               </div>
-              <p className="text-xs text-slate-200 leading-relaxed font-normal pt-1">{t.message}</p>
+              <p className="text-xs text-gray-600 leading-relaxed font-normal pt-1">{t.message}</p>
             </div>
 
             {/* Dismiss Button */}
             <button
               onClick={() => dismiss(t.id)}
-              className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-850/80 transition-colors shrink-0"
+              className="text-gray-400 hover:text-gray-700 p-1 rounded-lg hover:bg-gray-100 transition-colors shrink-0"
               aria-label="Close notification"
             >
               <X className="w-4 h-4" />
@@ -187,15 +177,15 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
       {/* Confirmation Modal */}
       {confirmDialog && confirmDialog.isOpen && (
-        <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 text-left shadow-2xl space-y-4 ring-1 ring-white/10">
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in">
+          <div className="bg-white border border-gray-200 rounded-2xl max-w-md w-full p-6 text-left shadow-2xl space-y-4">
             <div className="flex items-start space-x-3.5">
               <div className={`p-2.5 rounded-xl shrink-0 ${
                 confirmDialog.options.variant === 'danger'
-                  ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' :
+                  ? 'bg-rose-50 text-rose-600 border border-rose-200' :
                 confirmDialog.options.variant === 'warning'
-                  ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
-                  'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30'
+                  ? 'bg-amber-50 text-amber-600 border border-amber-200' :
+                  'bg-blue-50 text-blue-600 border border-blue-200'
               }`}>
                 {confirmDialog.options.variant === 'danger' ? (
                   <AlertTriangle className="w-6 h-6" />
@@ -205,31 +195,31 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
               </div>
               <div className="flex-1 space-y-1">
                 <span className={`text-[10px] font-mono font-bold tracking-wider uppercase ${
-                  confirmDialog.options.variant === 'danger' ? 'text-rose-400' : 'text-indigo-400'
+                  confirmDialog.options.variant === 'danger' ? 'text-rose-600' : 'text-blue-600'
                 }`}>
-                  {confirmDialog.options.variant === 'danger' ? 'Critical Action Required' : 'System Confirmation'}
+                  {confirmDialog.options.variant === 'danger' ? 'Confirmation Required' : 'Governance Notice'}
                 </span>
-                <h3 className="text-base font-bold text-white">{confirmDialog.options.title}</h3>
-                <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-line">
+                <h3 className="text-base font-bold text-gray-900">{confirmDialog.options.title}</h3>
+                <p className="text-xs text-gray-600 leading-relaxed whitespace-pre-line">
                   {confirmDialog.options.message}
                 </p>
               </div>
             </div>
-            <div className="flex justify-end space-x-2.5 pt-3 border-t border-slate-800">
+            <div className="flex justify-end space-x-2.5 pt-3 border-t border-gray-200">
               <button
                 type="button"
                 onClick={() => handleConfirmChoice(false)}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+                className="px-4 py-2 rounded-lg text-xs font-semibold text-gray-700 hover:bg-gray-100 border border-gray-200 transition-colors"
               >
                 {confirmDialog.options.cancelText || 'Cancel'}
               </button>
               <button
                 type="button"
                 onClick={() => handleConfirmChoice(true)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold text-white shadow-lg transition-all ${
+                className={`px-4 py-2 rounded-lg text-xs font-bold text-white shadow-xs transition-all ${
                   confirmDialog.options.variant === 'danger'
-                    ? 'bg-rose-600 hover:bg-rose-500 shadow-rose-600/30'
-                    : 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-600/30'
+                    ? 'bg-rose-600 hover:bg-rose-700'
+                    : 'bg-blue-600 hover:bg-blue-700'
                 }`}
               >
                 {confirmDialog.options.confirmText || 'Confirm Action'}
@@ -249,4 +239,3 @@ export const useToast = () => {
   }
   return context;
 };
-

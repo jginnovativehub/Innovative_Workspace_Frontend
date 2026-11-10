@@ -1,6 +1,7 @@
 import {
   User, Project, Milestone, Task, WeeklyReport, ScheduleChangeRequest,
-  NotificationItem, AuditEvent, DashboardMetrics, LeaderboardUser, Badge, SystemConfig
+  NotificationItem, AuditEvent, DashboardMetrics, LeaderboardUser, Badge, SystemConfig,
+  PersonalProject, PersonalMilestone, PersonalTask
 } from './types';
 
 const rawApiUrl = (import.meta.env.VITE_API_URL ? String(import.meta.env.VITE_API_URL).trim() : '');
@@ -326,6 +327,77 @@ export const api = {
     return request<SystemConfig>('/config', {
       method: 'PATCH',
       body: JSON.stringify(updates)
+    });
+  },
+
+  // ---------------------------------------------------------------------
+  // Personal Projects (Strictly Private & Confidential to Current User)
+  // ---------------------------------------------------------------------
+  getPersonalProjects: async (): Promise<PersonalProject[]> => {
+    return request<PersonalProject[]>('/personal-projects');
+  },
+
+  getPersonalProjectById: async (id: number | string): Promise<PersonalProject> => {
+    return request<PersonalProject>(`/personal-projects/${id}`);
+  },
+
+  createPersonalProject: async (data: Partial<PersonalProject>): Promise<PersonalProject> => {
+    return request<PersonalProject>('/personal-projects', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  },
+
+  updatePersonalProject: async (id: number | string, data: Partial<PersonalProject>): Promise<PersonalProject> => {
+    return request<PersonalProject>(`/personal-projects/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data)
+    });
+  },
+
+  deletePersonalProject: async (id: number | string): Promise<{ success: boolean; message: string }> => {
+    return request<{ success: boolean; message: string }>(`/personal-projects/${id}`, {
+      method: 'DELETE'
+    });
+  },
+
+  addPersonalMilestone: async (projectId: number | string, data: Partial<PersonalMilestone>): Promise<PersonalProject> => {
+    return request<PersonalProject>(`/personal-projects/${projectId}/milestones`, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  },
+
+  updatePersonalMilestone: async (projectId: number | string, milestoneId: string | number, data: Partial<PersonalMilestone>): Promise<PersonalProject> => {
+    return request<PersonalProject>(`/personal-projects/${projectId}/milestones/${milestoneId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data)
+    });
+  },
+
+  deletePersonalMilestone: async (projectId: number | string, milestoneId: string | number): Promise<PersonalProject> => {
+    return request<PersonalProject>(`/personal-projects/${projectId}/milestones/${milestoneId}`, {
+      method: 'DELETE'
+    });
+  },
+
+  addPersonalTask: async (projectId: number | string, data: Partial<PersonalTask>): Promise<PersonalProject> => {
+    return request<PersonalProject>(`/personal-projects/${projectId}/tasks`, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  },
+
+  updatePersonalTask: async (projectId: number | string, taskId: string | number, data: Partial<PersonalTask>): Promise<PersonalProject> => {
+    return request<PersonalProject>(`/personal-projects/${projectId}/tasks/${taskId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data)
+    });
+  },
+
+  deletePersonalTask: async (projectId: number | string, taskId: string | number): Promise<PersonalProject> => {
+    return request<PersonalProject>(`/personal-projects/${projectId}/tasks/${taskId}`, {
+      method: 'DELETE'
     });
   }
 };

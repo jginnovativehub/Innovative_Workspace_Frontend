@@ -52,36 +52,36 @@ export const BlockerModal: React.FC<BlockerModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-      <div className="bg-slate-900 border border-rose-500/30 rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+      <div className="bg-white border border-rose-200 rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl flex flex-col">
         {/* Header */}
-        <div className="p-5 border-b border-slate-800 flex items-center justify-between bg-rose-950/20">
+        <div className="p-5 border-b border-gray-200 flex items-center justify-between bg-rose-50">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400 shadow-lg shadow-rose-500/20">
+            <div className="w-10 h-10 rounded-xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-700 shadow-lg shadow-rose-500/20">
               <ShieldAlert className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white flex items-center space-x-1.5">
+              <h3 className="text-base font-bold text-gray-900 flex items-center space-x-1.5">
                 <span>Formal Blocker & Risk Exception Form</span>
               </h3>
-              <p className="text-xs text-rose-300/80">Immediate escalation protocol for stalled or high-risk deliverables</p>
+              <p className="text-xs text-rose-700/80">Immediate escalation protocol for stalled or high-risk deliverables</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+          <button onClick={onClose} className="p-1.5 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          <div className="bg-slate-950 p-3 rounded-lg border border-slate-800 text-xs">
-            <span className="text-slate-400 block font-semibold">Target Task:</span>
-            <span className="text-white font-bold">{task.title}</span>
-            <span className="text-slate-400 block text-[11px] mt-0.5">Under Milestone: {task.milestoneTitle}</span>
+          <div className="bg-gray-50 p-3 rounded-lg border border-gray-200 text-xs">
+            <span className="text-gray-600 block font-semibold">Target Task:</span>
+            <span className="text-gray-900 font-bold block">{task.title}</span>
+            <span className="text-gray-600 block text-[11px] mt-0.5">Under Milestone: {task.milestoneTitle}</span>
           </div>
 
           <div>
-            <label className="text-xs font-bold text-slate-300 block mb-1">
+            <label className="text-xs font-bold text-gray-700 block mb-1">
               1. Blocker Summary / Inability Reason *
             </label>
             <input
@@ -90,12 +90,12 @@ export const BlockerModal: React.FC<BlockerModalProps> = ({
               value={summary}
               onChange={e => setSummary(e.target.value)}
               placeholder="e.g. Critical MOSFET distributor out of stock"
-              className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:border-rose-500"
+              className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 focus:border-rose-500"
             />
           </div>
 
           <div>
-            <label className="text-xs font-bold text-slate-300 block mb-1">
+            <label className="text-xs font-bold text-gray-700 block mb-1">
               2. Impact on Project & Downstream Milestones *
             </label>
             <textarea
@@ -104,12 +104,12 @@ export const BlockerModal: React.FC<BlockerModalProps> = ({
               value={impact}
               onChange={e => setImpact(e.target.value)}
               placeholder="e.g. Halts Rev B board routing; downstream prototype assembly delayed 4 days"
-              className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:border-rose-500"
+              className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 focus:border-rose-500"
             />
           </div>
 
           <div>
-            <label className="text-xs font-bold text-slate-300 block mb-1">
+            <label className="text-xs font-bold text-gray-700 block mb-1">
               3. Proposed Solution / Recovery Plan *
             </label>
             <textarea
@@ -118,24 +118,24 @@ export const BlockerModal: React.FC<BlockerModalProps> = ({
               value={proposedSolution}
               onChange={e => setProposedSolution(e.target.value)}
               placeholder="e.g. Re-route pad layout for dual-compatible D2PAK footprint and order Vishay samples"
-              className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:border-rose-500"
+              className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 focus:border-rose-500"
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-bold text-slate-300 block mb-1">
+              <label className="text-xs font-bold text-gray-700 block mb-1">
                 4. Expected Resolution Date
               </label>
               <input
                 type="date"
                 value={expectedResolutionDate}
                 onChange={e => setExpectedResolutionDate(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-mono"
+                className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 font-mono"
               />
             </div>
             <div>
-              <label className="text-xs font-bold text-slate-300 block mb-1">
+              <label className="text-xs font-bold text-gray-700 block mb-1">
                 5. Support / Decision Maker Needed *
               </label>
               <input
@@ -144,13 +144,13 @@ export const BlockerModal: React.FC<BlockerModalProps> = ({
                 value={supportNeeded}
                 onChange={e => setSupportNeeded(e.target.value)}
                 placeholder="e.g. COO expedited sample PO approval"
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:border-rose-500"
+                className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 focus:border-rose-500"
               />
             </div>
           </div>
 
           <div>
-            <label className="text-xs font-bold text-slate-400 block mb-1">
+            <label className="text-xs font-bold text-gray-900 block mb-1">
               Current Work Log & Evidence of State (Optional)
             </label>
             <input
@@ -158,7 +158,7 @@ export const BlockerModal: React.FC<BlockerModalProps> = ({
               value={workLog}
               onChange={e => setWorkLog(e.target.value)}
               placeholder="e.g. 80% routing completed, halted at output stage"
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-300"
+              className="w-full bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-xs text-gray-700"
             />
           </div>
 
@@ -166,7 +166,7 @@ export const BlockerModal: React.FC<BlockerModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white"
+              className="px-4 py-2 text-xs font-semibold text-gray-900 hover:text-gray-900"
             >
               Cancel
             </button>
@@ -184,4 +184,5 @@ export const BlockerModal: React.FC<BlockerModalProps> = ({
     </div>
   );
 };
+
 

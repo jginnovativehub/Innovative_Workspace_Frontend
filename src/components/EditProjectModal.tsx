@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Project } from '../types';
+import { Project, User } from '../types';
 import { Edit3, X, Save, AlertTriangle, Calendar, Layers, Flag } from 'lucide-react';
 import { toast } from '../context/ToastContext';
 
@@ -7,6 +7,7 @@ interface EditProjectModalProps {
   isOpen: boolean;
   onClose: () => void;
   project: Project | null;
+  users?: User[];
   onSaveProject: (id: number | string, data: any) => Promise<void>;
 }
 
@@ -14,6 +15,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
   isOpen,
   onClose,
   project,
+  users = [],
   onSaveProject
 }) => {
   const [code, setCode] = useState('');
@@ -25,6 +27,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
   const [targetDate, setTargetDate] = useState('');
   const [scope, setScope] = useState('');
   const [deliverables, setDeliverables] = useState('');
+  const [ownerId, setOwnerId] = useState<number | ''>('');
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -38,6 +41,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
       setTargetDate(project.targetDate ? project.targetDate.split('T')[0] : '');
       setScope(project.scope || '');
       setDeliverables(project.deliverables || '');
+      setOwnerId(project.ownerId !== undefined && project.ownerId !== null ? project.ownerId : '');
     }
   }, [project]);
 
@@ -62,7 +66,8 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
         startDate,
         targetDate,
         scope: scope.trim(),
-        deliverables: deliverables.trim()
+        deliverables: deliverables.trim(),
+        ownerId: ownerId !== '' ? Number(ownerId) : undefined
       });
       toast.success(`Project '${name}' successfully updated!`, 'Project Modified');
       onClose();
@@ -74,21 +79,21 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-      <div className="bg-slate-900 border border-indigo-500/30 rounded-2xl max-w-2xl w-full p-6 text-left shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+      <div className="bg-white border border-indigo-200 rounded-2xl max-w-2xl w-full p-6 text-left shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between border-b border-gray-200 pb-3">
           <div className="flex items-center space-x-2.5">
-            <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+            <div className="p-2 rounded-xl bg-blue-50 text-blue-700 border border-indigo-200">
               <Edit3 className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-base text-white">Edit Project Details</h3>
-              <p className="text-xs text-slate-400">Update project parameters, priority, schedule, and deliverables</p>
+              <h3 className="font-bold text-base text-gray-900">Edit Project Details</h3>
+              <p className="text-xs text-gray-600">Update project parameters, priority, schedule, and deliverables</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors"
+            className="text-gray-600 hover:text-gray-900 p-1 rounded-lg hover:bg-gray-50 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -97,45 +102,65 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="text-xs font-bold text-slate-300 block mb-1">Project Code *</label>
+              <label className="text-xs font-bold text-gray-700 block mb-1">Project Code *</label>
               <input
                 type="text"
                 required
                 value={code}
                 onChange={e => setCode(e.target.value.toUpperCase())}
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-mono uppercase"
+                className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 font-mono uppercase"
               />
             </div>
             <div className="sm:col-span-2">
-              <label className="text-xs font-bold text-slate-300 block mb-1">Project Name *</label>
+              <label className="text-xs font-bold text-gray-700 block mb-1">Project Name *</label>
               <input
                 type="text"
                 required
                 value={name}
                 onChange={e => setName(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"
+                className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900"
               />
             </div>
           </div>
 
           <div>
-            <label className="text-xs font-bold text-slate-300 block mb-1">Project Objective *</label>
+            <label className="text-xs font-bold text-gray-700 block mb-1">Project Objective *</label>
             <textarea
               rows={2}
               required
               value={objective}
               onChange={e => setObjective(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"
+              className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900"
             />
           </div>
 
+          {users && users.length > 0 && (
+            <div>
+              <label className="text-xs font-bold text-gray-700 block mb-1">
+                Designated Initiative Lead / Owner
+              </label>
+              <select
+                value={ownerId}
+                onChange={e => setOwnerId(e.target.value ? Number(e.target.value) : '')}
+                className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 focus:border-indigo-500 focus:outline-none cursor-pointer"
+              >
+                <option value="">Executive Leadership</option>
+                {users.map(u => (
+                  <option key={u.id} value={u.id}>
+                    {u.fullName} ({u.role} - {u.department})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-bold text-slate-300 block mb-1">Priority</label>
+              <label className="text-xs font-bold text-gray-700 block mb-1">Priority</label>
               <select
                 value={priority}
                 onChange={e => setPriority(e.target.value as any)}
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"
+                className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900"
               >
                 <option value="LOW">Low Priority</option>
                 <option value="MEDIUM">Medium Priority</option>
@@ -144,11 +169,11 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
               </select>
             </div>
             <div>
-              <label className="text-xs font-bold text-slate-300 block mb-1">Project Status</label>
+              <label className="text-xs font-bold text-gray-700 block mb-1">Project Status</label>
               <select
                 value={status}
                 onChange={e => setStatus(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"
+                className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900"
               >
                 <option value="ACTIVE">ACTIVE</option>
                 <option value="ON_HOLD">ON_HOLD</option>
@@ -160,53 +185,53 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-bold text-slate-300 block mb-1">Start Date</label>
+              <label className="text-xs font-bold text-gray-700 block mb-1">Start Date</label>
               <input
                 type="date"
                 value={startDate}
                 onChange={e => setStartDate(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-mono"
+                className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 font-mono"
               />
             </div>
             <div>
-              <label className="text-xs font-bold text-slate-300 block mb-1">Target End Date</label>
+              <label className="text-xs font-bold text-gray-700 block mb-1">Target End Date</label>
               <input
                 type="date"
                 value={targetDate}
                 onChange={e => setTargetDate(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-mono"
+                className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 font-mono"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-bold text-slate-300 block mb-1">Scope</label>
+              <label className="text-xs font-bold text-gray-700 block mb-1">Scope</label>
               <textarea
                 rows={2}
                 value={scope}
                 onChange={e => setScope(e.target.value)}
                 placeholder="Key scope boundaries..."
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"
+                className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900"
               />
             </div>
             <div>
-              <label className="text-xs font-bold text-slate-300 block mb-1">Deliverables</label>
+              <label className="text-xs font-bold text-gray-700 block mb-1">Deliverables</label>
               <textarea
                 rows={2}
                 value={deliverables}
                 onChange={e => setDeliverables(e.target.value)}
                 placeholder="Key expected outputs..."
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"
+                className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900"
               />
             </div>
           </div>
 
-          <div className="flex justify-end space-x-2.5 pt-3 border-t border-slate-800">
+          <div className="flex justify-end space-x-2.5 pt-3 border-t border-gray-200">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-900 hover:text-gray-900 hover:bg-gray-50 transition-colors"
             >
               Cancel
             </button>
@@ -224,4 +249,5 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
     </div>
   );
 };
+
 

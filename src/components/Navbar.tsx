@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { User, NotificationItem } from '../types';
 import { 
-  Trophy, Flame, Bell, UserCheck, Shield, ChevronDown, 
-  Sparkles, Check, Clock, AlertTriangle, Layers, LogOut, RefreshCw
+  Trophy, Flame, Bell, ChevronDown, 
+  LogOut, RefreshCw, Lock
 } from 'lucide-react';
+import logoImg from '../assets/logo.png';
 
 interface NavbarProps {
   currentUser: User;
@@ -14,6 +15,8 @@ interface NavbarProps {
   onLogout?: () => void;
   onRefreshAll?: () => void;
   refreshing?: boolean;
+  onOpenPersonalTracker?: () => void;
+  isPersonalTrackerActive?: boolean;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -24,7 +27,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   onMarkAllNotificationsRead,
   onLogout,
   onRefreshAll,
-  refreshing = false
+  refreshing = false,
+  onOpenPersonalTracker,
+  isPersonalTrackerActive = false
 }) => {
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
@@ -39,10 +44,10 @@ export const Navbar: React.FC<NavbarProps> = ({
   const progressPercent = Math.min(100, Math.round((progressInLevel / xpNeeded) * 100));
 
   const roleColors: Record<string, string> = {
-    ADMIN: 'bg-red-500/20 text-red-300 border-red-500/30',
-    CEO: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
-    COO: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
-    EMPLOYEE: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+    ADMIN: 'bg-red-50 text-red-700 border-red-200',
+    CEO: 'bg-purple-50 text-purple-700 border-purple-200',
+    COO: 'bg-blue-50 text-blue-700 border-blue-200',
+    EMPLOYEE: 'bg-emerald-50 text-emerald-700 border-emerald-200'
   };
 
   const getRoleLabel = (role: string) => {
@@ -53,83 +58,99 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 text-white shadow-xl">
+    <header className="sticky top-0 z-40 bg-white border-b border-gray-200 text-gray-900 shadow-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand & Organization Title */}
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-indigo-500/25 ring-1 ring-white/20">
-            <Layers className="w-6 h-6 text-white" />
+          <div className="w-10 h-10 rounded-xl bg-white p-1 flex items-center justify-center shadow-xs shrink-0 border border-gray-200 overflow-hidden">
+            <img src={logoImg} alt="Innovative Hub" className="w-full h-full object-contain" />
           </div>
           <div>
             <div className="flex items-center space-x-2">
-              <span className="font-extrabold text-base tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-100 to-indigo-200">
-                JG INNOVATIVE HUB
+              <span className="font-bold text-base text-gray-900 tracking-tight">
+                INNOVATIVE HUB
               </span>
-              <span className="text-[10px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+              <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-gray-100 text-gray-700 border border-gray-200">
                 Pvt. Ltd.
               </span>
             </div>
-            <p className="text-xs text-slate-400 font-medium">Project, Milestone & Employee Mastery Platform</p>
+            <p className="text-xs text-gray-500">Project & Milestone Management</p>
           </div>
         </div>
 
-        {/* Center: Gamified Innovation HUD */}
-        <div className="hidden lg:flex items-center space-x-4 bg-slate-950/60 border border-slate-800/80 px-4 py-1.5 rounded-full">
+        {/* Center: Innovation Status HUD */}
+        <div className="hidden lg:flex items-center space-x-4 bg-gray-50 border border-gray-200 px-4 py-1.5 rounded-full shadow-2xs">
           {/* Level & Rank Badge */}
           <div className="flex items-center space-x-2">
-            <span className="w-6 h-6 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 flex items-center justify-center text-xs font-bold text-white shadow-sm">
+            <span className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold text-white shadow-xs">
               {currentUser.level}
             </span>
             <div className="text-left">
-              <span className="text-xs font-semibold text-slate-200 block leading-tight">
+              <span className="text-xs font-semibold text-gray-900 block leading-tight">
                 {currentUser.avatarTitle}
               </span>
-              <span className="text-[10px] text-slate-400 font-medium">Rank Level {currentUser.level}</span>
+              <span className="text-[10px] text-gray-500 font-medium">Rank Level {currentUser.level}</span>
             </div>
           </div>
 
           {/* XP Progress Bar */}
-          <div className="w-36 flex flex-col justify-center">
-            <div className="flex justify-between text-[10px] text-slate-400 font-mono mb-1">
-              <span className="text-indigo-300 font-semibold">{currentUser.xp} XP</span>
+          <div className="w-32 flex flex-col justify-center">
+            <div className="flex justify-between text-[10px] text-gray-500 font-mono mb-1">
+              <span className="text-blue-700 font-semibold">{currentUser.xp} XP</span>
               <span>{nextLevelXP} XP</span>
             </div>
-            <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden p-0.5 border border-slate-700/50">
+            <div className="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
               <div 
-                className="h-full rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 transition-all duration-500"
+                className="h-full rounded-full bg-blue-600 transition-all duration-500"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
           </div>
 
           {/* On-Time Streak */}
-          <div className="flex items-center space-x-1.5 pl-2 border-l border-slate-800 text-amber-400 text-xs font-bold">
-            <Flame className="w-4 h-4 text-orange-400 fill-orange-400 animate-pulse" />
+          <div className="flex items-center space-x-1.5 pl-3 border-l border-gray-200 text-amber-700 text-xs font-bold">
+            <Flame className="w-4 h-4 text-amber-500 fill-amber-500" />
             <span>{currentUser.streakCount}w Streak</span>
           </div>
         </div>
 
         {/* Right Action Icons & User Profile */}
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2.5">
           {/* Refresh System Data Button */}
           {onRefreshAll && (
             <button
               onClick={onRefreshAll}
               disabled={refreshing}
-              className="p-2 rounded-lg bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 hover:border-indigo-500/40 text-slate-300 hover:text-white transition-colors"
+              className="p-2 rounded-lg bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 transition-colors"
               title="Refresh System Data"
             >
-              <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin text-indigo-400' : ''}`} />
+              <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin text-blue-600' : ''}`} />
+            </button>
+          )}
+
+          {/* Personal Project Tracker Button */}
+          {onOpenPersonalTracker && (
+            <button
+              onClick={onOpenPersonalTracker}
+              className={`flex items-center space-x-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all shadow-xs ${
+                isPersonalTrackerActive
+                  ? 'bg-emerald-600 text-white border-emerald-600'
+                  : 'bg-emerald-50 hover:bg-emerald-100 border-emerald-200 text-emerald-800'
+              }`}
+              title="Open Private Personal Project Tracker"
+            >
+              <Lock className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Personal Projects</span>
             </button>
           )}
 
           {/* Hall of Fame / Leaderboard Button */}
           <button
             onClick={onOpenLeaderboard}
-            className="flex items-center space-x-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 text-amber-300 hover:bg-amber-500/20 transition-colors shadow-sm"
+            className="flex items-center space-x-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 transition-colors shadow-xs"
             title="Innovation Hall of Fame & Badges"
           >
-            <Trophy className="w-4 h-4 text-amber-400" />
+            <Trophy className="w-4 h-4 text-amber-600" />
             <span className="hidden sm:inline">Hall of Fame</span>
           </button>
 
@@ -137,49 +158,49 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="relative">
             <button
               onClick={() => setShowNotifDropdown(!showNotifDropdown)}
-              className="relative p-2 rounded-lg bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 transition-colors"
+              className="relative p-2 rounded-lg bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 transition-colors"
               title="Notifications"
             >
-              <Bell className="w-4 h-4 text-slate-300" />
+              <Bell className="w-4 h-4" />
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-[10px] font-bold flex items-center justify-center text-white ring-2 ring-slate-900">
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-600 text-[10px] font-bold flex items-center justify-center text-white ring-2 ring-white">
                   {unreadCount}
                 </span>
               )}
             </button>
 
             {showNotifDropdown && (
-              <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl z-50 overflow-hidden">
-                <div className="p-3 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+              <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden">
+                <div className="p-3 border-b border-gray-200 flex items-center justify-between bg-gray-50">
                   <div className="flex items-center space-x-2">
-                    <Bell className="w-4 h-4 text-indigo-400" />
-                    <span className="font-semibold text-xs text-white">Notifications ({unreadCount} new)</span>
+                    <Bell className="w-4 h-4 text-blue-600" />
+                    <span className="font-semibold text-xs text-gray-900">Notifications ({unreadCount} new)</span>
                   </div>
                   {unreadCount > 0 && (
                     <button
                       onClick={onMarkAllNotificationsRead}
-                      className="text-[11px] text-indigo-400 hover:text-indigo-300 font-medium"
+                      className="text-[11px] text-blue-600 hover:text-blue-700 font-semibold"
                     >
                       Mark all read
                     </button>
                   )}
                 </div>
-                <div className="max-h-80 overflow-y-auto divide-y divide-slate-800/60">
+                <div className="max-h-80 overflow-y-auto divide-y divide-gray-100">
                   {notifications.length === 0 ? (
-                    <div className="p-4 text-center text-xs text-slate-500">No new notifications.</div>
+                    <div className="p-4 text-center text-xs text-gray-500">No new notifications.</div>
                   ) : (
                     notifications.map(n => (
                       <div
                         key={n.id}
                         onClick={() => onMarkNotificationRead(n.id)}
-                        className={`p-3 text-xs transition-colors hover:bg-slate-800/50 cursor-pointer ${!n.readAt ? 'bg-indigo-950/20' : ''}`}
+                        className={`p-3 text-xs transition-colors hover:bg-gray-50 cursor-pointer ${!n.readAt ? 'bg-blue-50/50' : ''}`}
                       >
                         <div className="flex items-start justify-between">
-                          <span className="font-semibold text-slate-200">{n.title}</span>
-                          {!n.readAt && <span className="w-2 h-2 rounded-full bg-indigo-500 mt-1" />}
+                          <span className="font-semibold text-gray-900">{n.title}</span>
+                          {!n.readAt && <span className="w-2 h-2 rounded-full bg-blue-600 mt-1" />}
                         </div>
-                        <p className="text-slate-400 mt-1 leading-relaxed text-[11px]">{n.body}</p>
-                        <span className="text-[10px] text-slate-500 block mt-1.5">
+                        <p className="text-gray-600 mt-1 leading-relaxed text-[11px]">{n.body}</p>
+                        <span className="text-[10px] text-gray-400 block mt-1.5">
                           {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
                       </div>
@@ -190,79 +211,79 @@ export const Navbar: React.FC<NavbarProps> = ({
             )}
           </div>
 
-          {/* Secure Authenticated User Profile Menu */}
+          {/* Authenticated User Profile Menu */}
           <div className="relative">
             <button
               onClick={() => setShowUserDropdown(!showUserDropdown)}
-              className="flex items-center space-x-2 pl-2 pr-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 hover:bg-slate-750 transition-all text-left"
+              className="flex items-center space-x-2 pl-2 pr-2.5 py-1.5 rounded-lg bg-gray-50 border border-gray-200 hover:bg-gray-100 transition-colors text-left"
             >
-              <div className="w-7 h-7 rounded-full bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center font-bold text-xs text-indigo-300">
+              <div className="w-7 h-7 rounded-full bg-blue-100 border border-blue-200 flex items-center justify-center font-bold text-xs text-blue-700">
                 {currentUser.fullName.split(' ').map(n => n[0]).join('')}
               </div>
               <div className="hidden md:block">
-                <span className="text-xs font-semibold text-white block leading-tight">{currentUser.fullName}</span>
-                <span className={`text-[10px] font-bold px-1 py-0.2 rounded border ${roleColors[currentUser.role] || ''}`}>
+                <span className="text-xs font-semibold text-gray-900 block leading-tight">{currentUser.fullName}</span>
+                <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded border ${roleColors[currentUser.role] || ''}`}>
                   {currentUser.role}
                 </span>
               </div>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-1" />
+              <ChevronDown className="w-3.5 h-3.5 text-gray-400 ml-1" />
             </button>
 
             {showUserDropdown && (
-              <div className="absolute right-0 mt-2 w-80 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl z-50 overflow-hidden divide-y divide-slate-800">
+              <div className="absolute right-0 mt-2 w-72 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden divide-y divide-gray-100">
                 {/* User Card Header */}
-                <div className="p-4 bg-slate-950/90 text-left">
+                <div className="p-4 bg-gray-50/70 text-left">
                   <div className="flex items-center space-x-3 mb-3">
-                    <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center font-black text-sm text-white shadow-md">
+                    <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center font-bold text-sm text-white shadow-xs">
                       {currentUser.fullName.split(' ').map(n => n[0]).join('')}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h4 className="font-bold text-sm text-white truncate">{currentUser.fullName}</h4>
+                      <h4 className="font-bold text-sm text-gray-900 truncate">{currentUser.fullName}</h4>
                       <span className={`inline-block mt-0.5 text-[10px] font-bold px-1.5 py-0.5 rounded border ${roleColors[currentUser.role] || ''}`}>
                         {getRoleLabel(currentUser.role)}
                       </span>
                     </div>
                   </div>
 
-                  <div className="space-y-1.5 text-xs pt-1 border-t border-slate-800/80">
-                    <div className="flex justify-between text-slate-400">
-                      <span className="text-slate-500">Email:</span>
-                      <span className="text-slate-200 font-medium truncate max-w-[180px]">{currentUser.email}</span>
+                  <div className="space-y-1.5 text-xs pt-2 border-t border-gray-200">
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Email:</span>
+                      <span className="text-gray-800 font-medium truncate max-w-[170px]">{currentUser.email}</span>
                     </div>
                     {currentUser.department && (
-                      <div className="flex justify-between text-slate-400">
-                        <span className="text-slate-500">Department:</span>
-                        <span className="text-slate-200 font-medium">{currentUser.department}</span>
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Department:</span>
+                        <span className="text-gray-800 font-medium">{currentUser.department}</span>
                       </div>
                     )}
-                    <div className="flex justify-between text-slate-400">
-                      <span className="text-slate-500">Rank:</span>
-                      <span className="text-indigo-300 font-medium">{currentUser.avatarTitle} (Level {currentUser.level})</span>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Rank:</span>
+                      <span className="text-blue-700 font-medium">{currentUser.avatarTitle} (Level {currentUser.level})</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Session Security Indicator */}
-                <div className="px-4 py-2 bg-slate-900 flex items-center justify-between text-[11px] text-slate-400">
-                  <span className="flex items-center space-x-1.5 text-emerald-400 font-medium">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <div className="px-4 py-2 bg-white flex items-center justify-between text-[11px] text-gray-500">
+                  <span className="flex items-center space-x-1.5 text-emerald-700 font-medium">
+                    <span className="w-2 h-2 rounded-full bg-emerald-600" />
                     <span>Verified Session</span>
                   </span>
-                  <span className="font-mono text-slate-500">ID: #{currentUser.id}</span>
+                  <span className="font-mono text-gray-400">ID: #{currentUser.id}</span>
                 </div>
 
                 {/* Sign Out Button */}
                 {onLogout && (
-                  <div className="p-2.5 bg-slate-950/80">
+                  <div className="p-2.5 bg-gray-50">
                     <button
                       onClick={() => {
                         setShowUserDropdown(false);
                         onLogout();
                       }}
-                      className="w-full flex items-center justify-center space-x-2 px-3 py-2.5 rounded-lg bg-rose-600/10 hover:bg-rose-600/20 border border-rose-500/30 text-rose-300 text-xs font-bold transition-colors cursor-pointer"
+                      className="w-full flex items-center justify-center space-x-2 px-3 py-2 rounded-lg bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 text-xs font-semibold transition-colors cursor-pointer"
                     >
-                      <LogOut className="w-4 h-4 text-rose-400" />
-                      <span>Log Out of Mission Cockpit</span>
+                      <LogOut className="w-4 h-4" />
+                      <span>Log Out</span>
                     </button>
                   </div>
                 )}
@@ -274,7 +295,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {onLogout && (
             <button
               onClick={onLogout}
-              className="p-2 rounded-lg bg-slate-800/80 hover:bg-rose-950/40 border border-slate-700 hover:border-rose-500/40 text-slate-400 hover:text-rose-300 transition-colors cursor-pointer"
+              className="p-2 rounded-lg bg-gray-50 hover:bg-red-50 border border-gray-200 hover:border-red-200 text-gray-600 hover:text-red-700 transition-colors cursor-pointer"
               title="Sign Out"
             >
               <LogOut className="w-4 h-4" />
@@ -285,4 +306,3 @@ export const Navbar: React.FC<NavbarProps> = ({
     </header>
   );
 };
-

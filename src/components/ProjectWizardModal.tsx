@@ -27,6 +27,7 @@ export const ProjectWizardModal: React.FC<ProjectWizardModalProps> = ({
   const [targetDate, setTargetDate] = useState(
     new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
   );
+  const [ownerId, setOwnerId] = useState<number | ''>('');
   const [selectedMemberIds, setSelectedMemberIds] = useState<number[]>([]);
 
   // Configurable Milestone Builder (Arbitrary count 3, 8, 12, etc.)
@@ -119,27 +120,36 @@ export const ProjectWizardModal: React.FC<ProjectWizardModalProps> = ({
       priority,
       startDate,
       targetDate,
+      ownerId: ownerId !== '' ? Number(ownerId) : undefined,
       memberIds: selectedMemberIds,
       milestones
     });
+    setCode('');
+    setName('');
+    setObjective('');
+    setScope('');
+    setDeliverables('');
+    setOwnerId('');
+    setSelectedMemberIds([]);
+    setStep(1);
     onClose();
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-4xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+      <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-4xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+        <div className="p-5 border-b border-gray-200 flex items-center justify-between bg-white/60">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/25">
               <FolderPlus className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white">Project Planning Wizard</h2>
-              <p className="text-xs text-slate-400">Step {step} of 2: {step === 1 ? 'Project Definition & Team' : 'Configurable Milestones Builder'}</p>
+              <h2 className="text-lg font-bold text-gray-900">Project Planning Wizard</h2>
+              <p className="text-xs text-gray-600">Step {step} of 2: {step === 1 ? 'Project Definition & Team' : 'Configurable Milestones Builder'}</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+          <button onClick={onClose} className="p-1.5 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -150,68 +160,68 @@ export const ProjectWizardModal: React.FC<ProjectWizardModalProps> = ({
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1">Project Code *</label>
+                  <label className="text-xs font-bold text-gray-700 block mb-1">Project Code *</label>
                   <input
                     type="text"
                     value={code}
                     onChange={e => setCode(e.target.value.toUpperCase())}
                     placeholder="e.g. PRJ-SOLAR-04"
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white uppercase font-mono focus:border-indigo-500"
+                    className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 uppercase font-mono focus:border-indigo-500"
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="text-xs font-bold text-slate-300 block mb-1">Project Name *</label>
+                  <label className="text-xs font-bold text-gray-700 block mb-1">Project Name *</label>
                   <input
                     type="text"
                     value={name}
                     onChange={e => setName(e.target.value)}
                     placeholder="e.g. High-Density Solar Inverter Gen 3"
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:border-indigo-500"
+                    className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 focus:border-indigo-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1">Strategic Objective *</label>
+                <label className="text-xs font-bold text-gray-700 block mb-1">Strategic Objective *</label>
                 <textarea
                   rows={2}
                   value={objective}
                   onChange={e => setObjective(e.target.value)}
                   placeholder="Primary business outcome, targets and technical purpose..."
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:border-indigo-500"
+                  className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 focus:border-indigo-500"
                 />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1">Scope</label>
+                  <label className="text-xs font-bold text-gray-700 block mb-1">Scope</label>
                   <textarea
                     rows={2}
                     value={scope}
                     onChange={e => setScope(e.target.value)}
                     placeholder="Included subsystems, architecture boundaries..."
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white"
+                    className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900"
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1">Expected Deliverables</label>
+                  <label className="text-xs font-bold text-gray-700 block mb-1">Expected Deliverables</label>
                   <textarea
                     rows={2}
                     value={deliverables}
                     onChange={e => setDeliverables(e.target.value)}
                     placeholder="Prototypes, schematics, test certificates..."
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white"
+                    className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1">Priority</label>
+                  <label className="text-xs font-bold text-gray-700 block mb-1">Priority</label>
                   <select
                     value={priority}
                     onChange={e => setPriority(e.target.value as any)}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white"
+                    className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900"
                   >
                     <option value="LOW">LOW</option>
                     <option value="MEDIUM">MEDIUM</option>
@@ -220,42 +230,72 @@ export const ProjectWizardModal: React.FC<ProjectWizardModalProps> = ({
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1">Start Date</label>
+                  <label className="text-xs font-bold text-gray-700 block mb-1">Start Date</label>
                   <input
                     type="date"
                     value={startDate}
                     onChange={e => setStartDate(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-mono"
+                    className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 font-mono"
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1">Target Completion Date</label>
+                  <label className="text-xs font-bold text-gray-700 block mb-1">Target Completion Date</label>
                   <input
                     type="date"
                     value={targetDate}
                     onChange={e => setTargetDate(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-mono"
+                    className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 font-mono"
                   />
                 </div>
               </div>
 
+              {/* Designated Initiative Lead / Owner */}
               <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1.5">Assign Team Members (RBAC Scope)</label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-32 overflow-y-auto p-2 bg-slate-950 rounded-lg border border-slate-800">
-                  {users.filter(u => u.role === 'EMPLOYEE').map(u => {
-                    const isSelected = selectedMemberIds.includes(u.id);
+                <label className="text-xs font-bold text-gray-700 block mb-1">
+                  Designated Initiative Lead / Owner
+                </label>
+                <select
+                  value={ownerId}
+                  onChange={e => {
+                    const val = e.target.value ? Number(e.target.value) : '';
+                    setOwnerId(val);
+                    if (val && !selectedMemberIds.includes(val)) {
+                      setSelectedMemberIds([...selectedMemberIds, val]);
+                    }
+                  }}
+                  className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 focus:border-indigo-500 focus:outline-none cursor-pointer"
+                >
+                  <option value="">Executive Leadership (Self)</option>
+                  {users.map(u => (
+                    <option key={u.id} value={u.id}>
+                      {u.fullName} ({u.role} - {u.department})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-gray-700 block mb-1.5">
+                  Assign Contributor Team Members ({selectedMemberIds.length} Selected)
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-36 overflow-y-auto p-2 bg-white rounded-lg border border-gray-200">
+                  {users.map(u => {
+                    const isOwner = Number(ownerId) === u.id;
+                    const isSelected = selectedMemberIds.includes(u.id) || isOwner;
                     return (
-                      <label key={u.id} className="flex items-center space-x-2 text-xs text-slate-300 cursor-pointer p-1 rounded hover:bg-slate-900">
+                      <label key={u.id} className="flex items-center space-x-2 text-xs text-gray-700 hover:text-gray-900 cursor-pointer p-1 rounded hover:bg-white select-none">
                         <input
                           type="checkbox"
                           checked={isSelected}
+                          disabled={isOwner}
                           onChange={e => {
                             if (e.target.checked) setSelectedMemberIds([...selectedMemberIds, u.id]);
                             else setSelectedMemberIds(selectedMemberIds.filter(id => id !== u.id));
                           }}
-                          className="rounded border-slate-700 text-indigo-600 focus:ring-0"
+                          className="rounded border-gray-200 bg-white text-indigo-600 focus:ring-0 cursor-pointer"
                         />
-                        <span>{u.fullName}</span>
+                        <span className="font-medium truncate">{u.fullName}</span>
+                        {isOwner && <span className="text-[10px] text-amber-700 font-bold ml-auto">(Lead)</span>}
                       </label>
                     );
                   })}
@@ -264,20 +304,20 @@ export const ProjectWizardModal: React.FC<ProjectWizardModalProps> = ({
             </div>
           ) : (
             <div className="space-y-4">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+              <div className="flex items-center justify-between pb-2 border-b border-gray-200">
                 <div>
-                  <h4 className="text-sm font-bold text-white flex items-center space-x-2">
-                    <Layers className="w-4 h-4 text-indigo-400" />
+                  <h4 className="text-sm font-bold text-gray-900 flex items-center space-x-2">
+                    <Layers className="w-4 h-4 text-indigo-700" />
                     <span>Configurable Milestone Schedule ({milestones.length} Milestones)</span>
                   </h4>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-gray-900">
                     Add or remove any number of milestone gates (supports 3, 8, 12, or custom stages).
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={handleAddMilestone}
-                  className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600/30 text-indigo-300 border border-indigo-500/40 hover:bg-indigo-600/50 transition-colors"
+                  className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white border border-indigo-500/40 hover:bg-indigo-600/50 transition-colors"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add Milestone Stage</span>
@@ -286,16 +326,16 @@ export const ProjectWizardModal: React.FC<ProjectWizardModalProps> = ({
 
               <div className="space-y-3">
                 {milestones.map((m, idx) => (
-                  <div key={idx} className="bg-slate-950/70 border border-slate-800 rounded-xl p-4 space-y-3">
+                  <div key={idx} className="bg-white/70 border border-gray-200 rounded-xl p-4 space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-mono">
+                      <span className="text-xs font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-indigo-200 font-mono">
                         Stage {m.sequence}
                       </span>
                       {milestones.length > 1 && (
                         <button
                           type="button"
                           onClick={() => handleRemoveMilestone(idx)}
-                          className="text-slate-500 hover:text-rose-400 p-1"
+                          className="text-gray-600 hover:text-rose-700 p-1"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -304,38 +344,38 @@ export const ProjectWizardModal: React.FC<ProjectWizardModalProps> = ({
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <div>
-                        <label className="text-[11px] font-semibold text-slate-400 block mb-0.5">Milestone Title *</label>
+                        <label className="text-[11px] font-semibold text-gray-600 block mb-0.5">Milestone Title *</label>
                         <input
                           type="text"
                           value={m.title}
                           onChange={e => handleMilestoneChange(idx, 'title', e.target.value)}
-                          className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white"
+                          className="w-full bg-white border border-gray-200 rounded px-2.5 py-1.5 text-xs text-gray-900"
                         />
                       </div>
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <label className="text-[11px] font-semibold text-slate-400 block mb-0.5">Start Date</label>
+                          <label className="text-[11px] font-semibold text-gray-900 block mb-0.5">Start Date</label>
                           <input
                             type="date"
                             value={m.startDate}
                             onChange={e => handleMilestoneChange(idx, 'startDate', e.target.value)}
-                            className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1.5 text-xs text-white font-mono"
+                            className="w-full bg-white border border-gray-200 rounded px-2 py-1.5 text-xs text-gray-900 font-mono"
                           />
                         </div>
                         <div>
-                          <label className="text-[11px] font-semibold text-slate-400 block mb-0.5">Due Date</label>
+                          <label className="text-[11px] font-semibold text-gray-900 block mb-0.5">Due Date</label>
                           <input
                             type="date"
                             value={m.dueDate}
                             onChange={e => handleMilestoneChange(idx, 'dueDate', e.target.value)}
-                            className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1.5 text-xs text-white font-mono"
+                            className="w-full bg-white border border-gray-200 rounded px-2 py-1.5 text-xs text-gray-900 font-mono"
                           />
                         </div>
                       </div>
                     </div>
 
                     <div>
-                      <label className="text-[11px] font-semibold text-slate-400 block mb-0.5">
+                      <label className="text-[11px] font-semibold text-gray-900 block mb-0.5">
                         Acceptance Criteria (Verification Gate Standard) *
                       </label>
                       <input
@@ -343,7 +383,7 @@ export const ProjectWizardModal: React.FC<ProjectWizardModalProps> = ({
                         value={m.acceptanceCriteria}
                         onChange={e => handleMilestoneChange(idx, 'acceptanceCriteria', e.target.value)}
                         placeholder="Criteria required for completion approval..."
-                        className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white font-mono"
+                        className="w-full bg-white border border-gray-200 rounded px-2.5 py-1.5 text-xs text-gray-900 font-mono"
                       />
                     </div>
                   </div>
@@ -354,10 +394,10 @@ export const ProjectWizardModal: React.FC<ProjectWizardModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-slate-800 flex justify-between bg-slate-950/80">
+        <div className="p-4 border-t border-gray-200 flex justify-between bg-white/80">
           {step === 1 ? (
             <>
-              <button onClick={onClose} className="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white">
+              <button onClick={onClose} className="px-4 py-2 text-xs font-semibold text-gray-900 hover:text-gray-900">
                 Cancel
               </button>
               <button
@@ -369,7 +409,7 @@ export const ProjectWizardModal: React.FC<ProjectWizardModalProps> = ({
             </>
           ) : (
             <>
-              <button onClick={() => setStep(1)} className="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white">
+              <button onClick={() => setStep(1)} className="px-4 py-2 text-xs font-semibold text-gray-600 hover:text-gray-900">
                 ⬅ Back to Project Info
               </button>
               <button
@@ -386,4 +426,5 @@ export const ProjectWizardModal: React.FC<ProjectWizardModalProps> = ({
     </div>
   );
 };
+
 

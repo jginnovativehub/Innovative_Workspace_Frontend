@@ -90,40 +90,40 @@ export const ReviewInboxModal: React.FC<ReviewInboxModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-4xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+      <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-4xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-950/70">
+        <div className="p-5 border-b border-gray-200 flex items-center justify-between bg-white/70">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/25">
               <Inbox className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <h2 className="text-lg font-bold text-white">Management Review Inbox</h2>
-                <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold">
+                <h2 className="text-lg font-bold text-gray-900">Management Review Inbox</h2>
+                <span className="text-xs px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 font-bold">
                   {inboxData.totalBacklog} Actions Pending
                 </span>
               </div>
-              <p className="text-xs text-slate-400">Assess milestone deliverables, evaluate reports, and audit schedule modifications.</p>
+              <p className="text-xs text-gray-600">Assess milestone deliverables, evaluate reports, and audit schedule modifications.</p>
             </div>
           </div>
           <button 
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Tab Strip */}
-        <div className="flex border-b border-slate-800 px-6 pt-2 bg-slate-950/40">
+        <div className="flex border-b border-gray-200 px-6 pt-2 bg-white/40">
           <button
             onClick={() => setActiveTab('MILESTONES')}
             className={`pb-3 px-4 text-xs font-bold border-b-2 transition-all flex items-center space-x-2 ${
               activeTab === 'MILESTONES'
-                ? 'border-indigo-500 text-indigo-400'
-                : 'border-transparent text-slate-400 hover:text-slate-300'
+                ? 'border-indigo-600 text-indigo-700 font-bold'
+                : 'border-transparent text-gray-600 hover:text-gray-700'
             }`}
           >
             <span>Milestones ({inboxData.pendingMilestones.length})</span>
@@ -132,8 +132,8 @@ export const ReviewInboxModal: React.FC<ReviewInboxModalProps> = ({
             onClick={() => setActiveTab('TASKS')}
             className={`pb-3 px-4 text-xs font-bold border-b-2 transition-all flex items-center space-x-2 ${
               activeTab === 'TASKS'
-                ? 'border-indigo-500 text-indigo-400'
-                : 'border-transparent text-slate-400 hover:text-slate-300'
+                ? 'border-indigo-600 text-indigo-700 font-bold'
+                : 'border-transparent text-gray-600 hover:text-gray-700'
             }`}
           >
             <span>Tasks ({inboxData.pendingTasks.length})</span>
@@ -142,8 +142,8 @@ export const ReviewInboxModal: React.FC<ReviewInboxModalProps> = ({
             onClick={() => setActiveTab('REPORTS')}
             className={`pb-3 px-4 text-xs font-bold border-b-2 transition-all flex items-center space-x-2 ${
               activeTab === 'REPORTS'
-                ? 'border-indigo-500 text-indigo-400'
-                : 'border-transparent text-slate-400 hover:text-slate-300'
+                ? 'border-indigo-600 text-indigo-700 font-bold'
+                : 'border-transparent text-gray-600 hover:text-gray-700'
             }`}
           >
             <span>Weekly Reports ({inboxData.pendingReports.length})</span>
@@ -152,8 +152,8 @@ export const ReviewInboxModal: React.FC<ReviewInboxModalProps> = ({
             onClick={() => setActiveTab('SCHEDULES')}
             className={`pb-3 px-4 text-xs font-bold border-b-2 transition-all flex items-center space-x-2 ${
               activeTab === 'SCHEDULES'
-                ? 'border-indigo-500 text-indigo-400'
-                : 'border-transparent text-slate-400 hover:text-slate-300'
+                ? 'border-indigo-600 text-indigo-700 font-bold'
+                : 'border-transparent text-gray-600 hover:text-gray-700'
             }`}
           >
             <span>Schedule Changes ({inboxData.pendingSchedules.length})</span>
@@ -161,8 +161,8 @@ export const ReviewInboxModal: React.FC<ReviewInboxModalProps> = ({
         </div>
 
         {/* Feedback Input Sticky Bar */}
-        <div className="p-4 bg-slate-950/60 border-b border-slate-800">
-          <label className="text-[11px] font-bold uppercase tracking-wider text-slate-300 block mb-1">
+        <div className="p-4 bg-white/60 border-b border-gray-200">
+          <label className="text-[11px] font-bold uppercase tracking-wider text-gray-700 block mb-1">
             Reviewer Decision Notes / Required Feedback:
           </label>
           <input
@@ -170,7 +170,7 @@ export const ReviewInboxModal: React.FC<ReviewInboxModalProps> = ({
             value={commentText}
             onChange={e => setCommentText(e.target.value)}
             placeholder="Type feedback comment before clicking Approve or Request Changes..."
-            className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+            className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
           />
         </div>
 
@@ -178,36 +178,36 @@ export const ReviewInboxModal: React.FC<ReviewInboxModalProps> = ({
         <div className="p-6 overflow-y-auto flex-1 space-y-4">
           {activeTab === 'MILESTONES' && (
             inboxData.pendingMilestones.length === 0 ? (
-              <div className="p-10 text-center text-slate-500 text-xs">Zero milestones awaiting review. All caught up!</div>
+              <div className="p-10 text-center text-gray-900 text-xs">Zero milestones awaiting review. All caught up!</div>
             ) : (
               inboxData.pendingMilestones.map(m => (
-                <div key={m.id} className="bg-slate-950/50 border border-slate-800 rounded-xl p-5 space-y-3">
+                <div key={m.id} className="bg-white/50 border border-gray-200 rounded-xl p-5 space-y-3">
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex items-center space-x-2">
-                        <span className="text-xs px-2 py-0.5 rounded font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                        <span className="text-xs px-2 py-0.5 rounded font-bold bg-blue-50 text-blue-700 border border-indigo-200">
                           Stage {m.sequence}
                         </span>
-                        <h4 className="font-bold text-sm text-white">{m.title}</h4>
+                        <h4 className="font-bold text-sm text-gray-900">{m.title}</h4>
                       </div>
-                      <span className="text-xs text-slate-400 mt-0.5 block">Project: {m.projectName} • Owner: {m.ownerName}</span>
+                      <span className="text-xs text-gray-600 mt-0.5 block">Project: {m.projectName} • Owner: {m.ownerName}</span>
                     </div>
-                    <span className="text-xs font-mono font-bold text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded border border-amber-500/30">
+                    <span className="text-xs font-mono font-bold text-amber-700 bg-amber-500/10 px-2.5 py-1 rounded border border-amber-200">
                       SUBMITTED FOR REVIEW
                     </span>
                   </div>
 
-                  <div className="bg-slate-900 p-3 rounded-lg border border-slate-800 text-xs">
-                    <span className="text-slate-400 font-semibold block mb-0.5">Verification Criteria:</span>
-                    <p className="text-slate-300 font-mono">{m.acceptanceCriteria}</p>
+                  <div className="bg-white p-3 rounded-lg border border-gray-200 text-xs">
+                    <span className="text-gray-600 font-semibold block mb-0.5">Verification Criteria:</span>
+                    <p className="text-gray-700 font-mono">{m.acceptanceCriteria}</p>
                   </div>
 
                   {m.evidenceNotes && (
-                    <div className="bg-emerald-950/20 p-3 rounded-lg border border-emerald-500/30 text-xs">
-                      <span className="text-emerald-400 font-bold block mb-0.5">Submitted Evidence & Notes:</span>
-                      <p className="text-emerald-200">{m.evidenceNotes}</p>
+                    <div className="bg-emerald-50 p-3 rounded-lg border border-emerald-200 text-xs">
+                      <span className="text-emerald-700 font-bold block mb-0.5">Submitted Evidence & Notes:</span>
+                      <p className="text-emerald-900">{m.evidenceNotes}</p>
                       {m.evidenceUrl && (
-                        <a href={m.evidenceUrl} target="_blank" rel="noreferrer" className="inline-flex items-center space-x-1 text-cyan-400 font-medium mt-1">
+                        <a href={m.evidenceUrl} target="_blank" rel="noreferrer" className="inline-flex items-center space-x-1 text-blue-700 font-medium mt-1">
                           <span>Open Evidence Link</span>
                           <ExternalLink className="w-3 h-3" />
                         </a>
@@ -219,7 +219,7 @@ export const ReviewInboxModal: React.FC<ReviewInboxModalProps> = ({
                     <button
                       disabled={submittingId === m.id}
                       onClick={() => handleMilestoneAction(m.id, 'CHANGES_REQUESTED')}
-                      className="px-3.5 py-2 rounded-lg text-xs font-bold bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 transition-all flex items-center space-x-1.5"
+                      className="px-3.5 py-2 rounded-lg text-xs font-bold bg-rose-500/10 hover:bg-rose-50 text-rose-700 border border-rose-200 transition-all flex items-center space-x-1.5"
                     >
                       <AlertTriangle className="w-3.5 h-3.5" />
                       <span>Request Changes</span>
@@ -240,26 +240,26 @@ export const ReviewInboxModal: React.FC<ReviewInboxModalProps> = ({
 
           {activeTab === 'TASKS' && (
             inboxData.pendingTasks.length === 0 ? (
-              <div className="p-10 text-center text-slate-500 text-xs">Zero tasks awaiting review.</div>
+              <div className="p-10 text-center text-gray-600 text-xs">Zero tasks awaiting review.</div>
             ) : (
               inboxData.pendingTasks.map(t => (
-                <div key={t.id} className="bg-slate-950/50 border border-slate-800 rounded-xl p-5 space-y-3">
+                <div key={t.id} className="bg-white/50 border border-gray-200 rounded-xl p-5 space-y-3">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h4 className="font-bold text-sm text-white">{t.title}</h4>
-                      <span className="text-xs text-slate-400 mt-0.5 block">
+                      <h4 className="font-bold text-sm text-gray-900">{t.title}</h4>
+                      <span className="text-xs text-gray-600 mt-0.5 block">
                         Milestone: {t.milestoneTitle} • Assignee: {t.ownerName}
                       </span>
                     </div>
-                    <span className="text-xs font-mono font-bold text-cyan-400 bg-cyan-500/10 px-2.5 py-1 rounded border border-cyan-500/30">
+                    <span className="text-xs font-mono font-bold text-blue-700 bg-cyan-500/10 px-2.5 py-1 rounded border border-cyan-500/30">
                       SUBMITTED
                     </span>
                   </div>
 
                   {t.acceptanceCriteria && (
-                    <div className="bg-slate-900 p-2.5 rounded-lg border border-slate-800 text-xs">
-                      <span className="text-slate-400 font-semibold block mb-0.5">Acceptance Criteria:</span>
-                      <p className="text-slate-300">{t.acceptanceCriteria}</p>
+                    <div className="bg-white p-2.5 rounded-lg border border-gray-200 text-xs">
+                      <span className="text-gray-600 font-semibold block mb-0.5">Acceptance Criteria:</span>
+                      <p className="text-gray-700">{t.acceptanceCriteria}</p>
                     </div>
                   )}
 
@@ -267,7 +267,7 @@ export const ReviewInboxModal: React.FC<ReviewInboxModalProps> = ({
                     <button
                       disabled={submittingId === t.id}
                       onClick={() => handleTaskAction(t.id, 'CHANGES_REQUESTED')}
-                      className="px-3.5 py-2 rounded-lg text-xs font-bold bg-rose-500/10 text-rose-300 border border-rose-500/30 hover:bg-rose-500/20 transition-all"
+                      className="px-3.5 py-2 rounded-lg text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 hover:bg-rose-500/20 transition-all"
                     >
                       Request Changes
                     </button>
@@ -286,48 +286,48 @@ export const ReviewInboxModal: React.FC<ReviewInboxModalProps> = ({
 
           {activeTab === 'REPORTS' && (
             inboxData.pendingReports.length === 0 ? (
-              <div className="p-10 text-center text-slate-500 text-xs">Zero weekly reports awaiting review.</div>
+              <div className="p-10 text-center text-gray-600 text-xs">Zero weekly reports awaiting review.</div>
             ) : (
               inboxData.pendingReports.map(r => {
                 const latestVer = r.versions?.[0];
                 return (
-                  <div key={r.id} className="bg-slate-950/50 border border-slate-800 rounded-xl p-5 space-y-4">
+                  <div key={r.id} className="bg-white/50 border border-gray-200 rounded-xl p-5 space-y-4">
                     <div className="flex items-start justify-between">
                       <div>
                         <div className="flex items-center space-x-2">
-                          <h4 className="font-bold text-sm text-white">{r.userName}'s Weekly Report</h4>
-                          <span className="text-xs px-2 py-0.5 rounded font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                          <h4 className="font-bold text-sm text-gray-900">{r.userName}'s Weekly Report</h4>
+                          <span className="text-xs px-2 py-0.5 rounded font-bold bg-purple-500/20 text-purple-800 border border-purple-200">
                             Version {r.currentVersion}
                           </span>
                         </div>
-                        <span className="text-xs text-slate-400 block mt-0.5">
+                        <span className="text-xs text-gray-600 block mt-0.5">
                           Period: {r.periodStart} to {r.periodEnd} • Submitted: {r.submittedAt ? new Date(r.submittedAt).toLocaleDateString() : 'Today'}
                         </span>
                       </div>
-                      <span className="text-xs font-bold text-amber-400 bg-amber-500/10 px-2 py-1 rounded border border-amber-500/30">
+                      <span className="text-xs font-bold text-amber-700 bg-amber-500/10 px-2 py-1 rounded border border-amber-200">
                         PENDING AUDIT
                       </span>
                     </div>
 
                     {latestVer && (
-                      <div className="space-y-2 text-xs bg-slate-900/90 p-4 rounded-xl border border-slate-800">
+                      <div className="space-y-2 text-xs bg-white p-4 rounded-xl border border-gray-200">
                         <div>
-                          <strong className="text-emerald-400 block mb-0.5">Completed This Week:</strong>
-                          <p className="text-slate-300">{latestVer.completedThisWeek}</p>
+                          <strong className="text-emerald-700 block mb-0.5">Completed This Week:</strong>
+                          <p className="text-gray-700">{latestVer.completedThisWeek}</p>
                         </div>
                         <div>
-                          <strong className="text-cyan-400 block mb-0.5">In Progress:</strong>
-                          <p className="text-slate-300">{latestVer.inProgress}</p>
+                          <strong className="text-blue-700 block mb-0.5">In Progress:</strong>
+                          <p className="text-gray-700">{latestVer.inProgress}</p>
                         </div>
                         {latestVer.blockersRisks && (
                           <div>
-                            <strong className="text-rose-400 block mb-0.5">Blockers & Mitigations:</strong>
-                            <p className="text-slate-300">{latestVer.blockersRisks}</p>
+                            <strong className="text-rose-700 block mb-0.5">Blockers & Mitigations:</strong>
+                            <p className="text-gray-700">{latestVer.blockersRisks}</p>
                           </div>
                         )}
                         <div>
-                          <strong className="text-indigo-400 block mb-0.5">Next Week Plan:</strong>
-                          <p className="text-slate-300">{latestVer.nextWeekPlan}</p>
+                          <strong className="text-indigo-700 block mb-0.5">Next Week Plan:</strong>
+                          <p className="text-gray-700">{latestVer.nextWeekPlan}</p>
                         </div>
                       </div>
                     )}
@@ -336,7 +336,7 @@ export const ReviewInboxModal: React.FC<ReviewInboxModalProps> = ({
                       <button
                         disabled={submittingId === r.id}
                         onClick={() => handleReportAction(r.id, 'CHANGES_REQUESTED')}
-                        className="px-3.5 py-2 rounded-lg text-xs font-bold bg-rose-500/10 text-rose-300 border border-rose-500/30 hover:bg-rose-500/20 transition-all"
+                        className="px-3.5 py-2 rounded-lg text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 hover:bg-rose-500/20 transition-all"
                       >
                         Request Additions (REP-02)
                       </button>
@@ -356,36 +356,36 @@ export const ReviewInboxModal: React.FC<ReviewInboxModalProps> = ({
 
           {activeTab === 'SCHEDULES' && (
             inboxData.pendingSchedules.length === 0 ? (
-              <div className="p-10 text-center text-slate-500 text-xs">Zero schedule change requests pending.</div>
+              <div className="p-10 text-center text-gray-600 text-xs">Zero schedule change requests pending.</div>
             ) : (
               inboxData.pendingSchedules.map(sq => (
-                <div key={sq.id} className="bg-slate-950/50 border border-slate-800 rounded-xl p-5 space-y-3">
+                <div key={sq.id} className="bg-white/50 border border-gray-200 rounded-xl p-5 space-y-3">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h4 className="font-bold text-sm text-white">Schedule Change Request</h4>
-                      <span className="text-xs text-slate-400 block mt-0.5">
+                      <h4 className="font-bold text-sm text-gray-900">Schedule Change Request</h4>
+                      <span className="text-xs text-gray-600 block mt-0.5">
                         Task: {sq.taskTitle} • Requester: {sq.requesterName}
                       </span>
                     </div>
-                    <span className="text-xs font-bold text-amber-400 bg-amber-500/10 px-2 py-1 rounded border border-amber-500/30">
+                    <span className="text-xs font-bold text-amber-700 bg-amber-500/10 px-2 py-1 rounded border border-amber-200">
                       PENDING APPROVAL
                     </span>
                   </div>
 
-                  <div className="flex items-center space-x-4 bg-slate-900 p-3 rounded-lg border border-slate-800 text-xs">
+                  <div className="flex items-center space-x-4 bg-white p-3 rounded-lg border border-gray-200 text-xs">
                     <div>
-                      <span className="text-slate-500 block">Original Due Date</span>
-                      <span className="font-mono font-bold text-slate-300 line-through">{sq.oldDueDate}</span>
+                      <span className="text-gray-600 block">Original Due Date</span>
+                      <span className="font-mono font-bold text-gray-700 line-through">{sq.oldDueDate}</span>
                     </div>
-                    <span className="text-slate-500 font-bold">➔</span>
+                    <span className="text-gray-600 font-bold">➔</span>
                     <div>
-                      <span className="text-cyan-400 block font-semibold">Proposed Due Date</span>
-                      <span className="font-mono font-bold text-cyan-300">{sq.newDueDate}</span>
+                      <span className="text-blue-700 block font-semibold">Proposed Due Date</span>
+                      <span className="font-mono font-bold text-blue-800">{sq.newDueDate}</span>
                     </div>
                   </div>
 
-                  <div className="text-xs bg-slate-900/60 p-3 rounded-lg border border-slate-800 text-slate-300">
-                    <strong className="text-slate-400 block mb-0.5">Requester Rationale:</strong>
+                  <div className="text-xs bg-white p-3 rounded-lg border border-gray-200 text-gray-700">
+                    <strong className="text-gray-600 block mb-0.5">Requester Rationale:</strong>
                     <p>{sq.reason}</p>
                   </div>
 
@@ -393,7 +393,7 @@ export const ReviewInboxModal: React.FC<ReviewInboxModalProps> = ({
                     <button
                       disabled={submittingId === sq.id}
                       onClick={() => handleScheduleAction(sq.id, 'REJECTED')}
-                      className="px-3.5 py-2 rounded-lg text-xs font-bold bg-rose-500/10 text-rose-300 border border-rose-500/30 hover:bg-rose-500/20 transition-all"
+                      className="px-3.5 py-2 rounded-lg text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 hover:bg-rose-500/20 transition-all"
                     >
                       Reject Extension
                     </button>
@@ -414,4 +414,5 @@ export const ReviewInboxModal: React.FC<ReviewInboxModalProps> = ({
     </div>
   );
 };
+
 

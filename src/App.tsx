@@ -19,6 +19,7 @@ import { EditProjectModal } from './components/EditProjectModal';
 import { DeleteProjectModal } from './components/DeleteProjectModal';
 import { LogoutModal } from './components/LogoutModal';
 import { LoginPage } from './components/LoginPage';
+import { PersonalProjectTracker } from './components/PersonalProjectTracker';
 
 import { 
   Shield, Crown, Settings, User as UserIcon, RefreshCw, 
@@ -54,6 +55,7 @@ export function App() {
   const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isPersonalTrackerOpen, setIsPersonalTrackerOpen] = useState(false);
 
   // Single Action Modals
   const [milestoneToSubmit, setMilestoneToSubmit] = useState<Milestone | null>(null);
@@ -340,7 +342,7 @@ export function App() {
 
   if (isInitializing) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center text-slate-400">
+      <div className="min-h-screen bg-white flex items-center justify-center text-gray-600">
         <div className="flex items-center space-x-2">
           <RefreshCw className="w-5 h-5 animate-spin text-indigo-500" />
           <span>Connecting to JG Innovative Hub Platform...</span>
@@ -354,7 +356,7 @@ export function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-white text-gray-900 flex flex-col font-sans">
       {/* Top Navbar HUD */}
       <Navbar
         currentUser={currentUser}
@@ -371,98 +373,111 @@ export function App() {
         onLogout={() => setIsLogoutModalOpen(true)}
         onRefreshAll={handleRefreshAll}
         refreshing={refreshing}
+        onOpenPersonalTracker={() => setIsPersonalTrackerOpen(!isPersonalTrackerOpen)}
+        isPersonalTrackerActive={isPersonalTrackerOpen}
       />
 
       
 
       {/* Main Workspace Render - Strictly Gated by currentUser.role */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-1">
-        {/* 1. CEO STRATEGIC PORTFOLIO - Visible ONLY to CEO */}
-        {currentUser.role === 'CEO' && metrics && (
-          <CeoDashboard
+        {/* Toggleable Full-Screen Personal Project Tracker */}
+        {isPersonalTrackerOpen ? (
+          <PersonalProjectTracker
             currentUser={currentUser}
-            projects={projects}
-            metrics={metrics}
-            weeklyReports={weeklyReports}
-            tasks={tasks}
-            onOpenProjectWizard={() => setIsProjectWizardOpen(true)}
-            onOpenWeeklyReportModal={(rep) => {
-              setSelectedReportForEdit(rep);
-              setIsWeeklyReportModalOpen(true);
-            }}
-            onSelectMilestoneForReview={(m) => setMilestoneToReview(m)}
-            onCreateUser={handleAdminCreateUser}
-            onEditProject={(p) => setProjectToEdit(p)}
-            onDeleteProject={(p) => setProjectToDelete(p)}
+            onBackToDashboard={() => setIsPersonalTrackerOpen(false)}
           />
-        )}
+        ) : (
+          <>
+            {/* 1. CEO STRATEGIC PORTFOLIO - Visible ONLY to CEO */}
+            {currentUser.role === 'CEO' && metrics && (
+              <CeoDashboard
+                currentUser={currentUser}
+                projects={projects}
+                metrics={metrics}
+                weeklyReports={weeklyReports}
+                tasks={tasks}
+                onOpenProjectWizard={() => setIsProjectWizardOpen(true)}
+                onOpenWeeklyReportModal={(rep) => {
+                  setSelectedReportForEdit(rep);
+                  setIsWeeklyReportModalOpen(true);
+                }}
+                onSelectMilestoneForReview={(m) => setMilestoneToReview(m)}
+                onCreateUser={handleAdminCreateUser}
+                onEditProject={(p) => setProjectToEdit(p)}
+                onDeleteProject={(p) => setProjectToDelete(p)}
+              />
+            )}
 
-        {/* 2. COO OPERATIONS COCKPIT - Visible ONLY to COO */}
-        {currentUser.role === 'COO' && metrics && (
-          <CooDashboard
-            currentUser={currentUser}
-            projects={projects}
-            metrics={metrics}
-            tasks={tasks}
-            weeklyReports={weeklyReports}
-            users={users}
-            reviewInboxData={reviewInboxData || { pendingMilestones: [], pendingTasks: [], pendingReports: [], pendingSchedules: [], totalBacklog: 0 }}
-            onOpenProjectWizard={() => setIsProjectWizardOpen(true)}
-            onOpenReviewInbox={() => setIsReviewInboxOpen(true)}
-            onOpenWeeklyReportModal={(rep) => {
-              setSelectedReportForEdit(rep);
-              setIsWeeklyReportModalOpen(true);
-            }}
-            onReviewWeeklyReport={handleInboxReviewReport}
-            onReviewSchedule={handleInboxReviewSchedule}
-            onCreateUser={handleAdminCreateUser}
-            onEditProject={(p) => setProjectToEdit(p)}
-            onDeleteProject={(p) => setProjectToDelete(p)}
-          />
-        )}
+            {/* 2. COO OPERATIONS COCKPIT - Visible ONLY to COO */}
+            {currentUser.role === 'COO' && metrics && (
+              <CooDashboard
+                currentUser={currentUser}
+                projects={projects}
+                metrics={metrics}
+                tasks={tasks}
+                weeklyReports={weeklyReports}
+                users={users}
+                reviewInboxData={reviewInboxData || { pendingMilestones: [], pendingTasks: [], pendingReports: [], pendingSchedules: [], totalBacklog: 0 }}
+                onOpenProjectWizard={() => setIsProjectWizardOpen(true)}
+                onOpenReviewInbox={() => setIsReviewInboxOpen(true)}
+                onOpenWeeklyReportModal={(rep) => {
+                  setSelectedReportForEdit(rep);
+                  setIsWeeklyReportModalOpen(true);
+                }}
+                onReviewWeeklyReport={handleInboxReviewReport}
+                onReviewSchedule={handleInboxReviewSchedule}
+                onCreateUser={handleAdminCreateUser}
+                onEditProject={(p) => setProjectToEdit(p)}
+                onDeleteProject={(p) => setProjectToDelete(p)}
+              />
+            )}
 
-        {/* 3. CONTRIBUTOR (USER) DASHBOARD - Visible to EMPLOYEE / Contributor */}
-        {currentUser.role !== 'CEO' && currentUser.role !== 'COO' && (
-          <EmployeeDashboard
-            currentUser={currentUser}
-            projects={projects}
-            selectedProject={currentProject}
-            tasks={tasks}
-            weeklyReports={weeklyReports}
-            onSelectProject={(id) => setSelectedProjectId(id)}
-            onOpenBlockerModal={(t) => {
-              setSelectedTaskForBlocker(t);
-              setIsBlockerModalOpen(true);
-            }}
-            onOpenScheduleModal={(t) => {
-              setTaskForScheduleChange(t);
-              setNewDueDateInput(t.dueDate);
-            }}
-            onSubmitTaskForReview={handleTaskSubmitReview}
-            onSubmitMilestoneForReview={(m) => setMilestoneToSubmit(m)}
-            onOpenWeeklyReportModal={(rep) => {
-              setSelectedReportForEdit(rep);
-              setIsWeeklyReportModalOpen(true);
-            }}
-            onOpenLeaderboard={() => setIsLeaderboardOpen(true)}
-          />
+            {/* 3. CONTRIBUTOR (USER) DASHBOARD - Visible to EMPLOYEE / Contributor */}
+            {currentUser.role !== 'CEO' && currentUser.role !== 'COO' && (
+              <EmployeeDashboard
+                currentUser={currentUser}
+                projects={projects}
+                selectedProject={currentProject}
+                tasks={tasks}
+                weeklyReports={weeklyReports}
+                onSelectProject={(id) => setSelectedProjectId(id)}
+                onOpenBlockerModal={(t) => {
+                  setSelectedTaskForBlocker(t);
+                  setIsBlockerModalOpen(true);
+                }}
+                onOpenScheduleModal={(t) => {
+                  setTaskForScheduleChange(t);
+                  setNewDueDateInput(t.dueDate);
+                }}
+                onSubmitTaskForReview={handleTaskSubmitReview}
+                onSubmitMilestoneForReview={(m) => setMilestoneToSubmit(m)}
+                onReviewMilestone={(m) => setMilestoneToReview(m)}
+                onOpenWeeklyReportModal={(rep) => {
+                  setSelectedReportForEdit(rep);
+                  setIsWeeklyReportModalOpen(true);
+                }}
+                onOpenLeaderboard={() => setIsLeaderboardOpen(true)}
+              />
+            )}
+          </>
         )}
       </main>
 
       {/* MODAL: SUBMIT MILESTONE FOR REVIEW */}
       {milestoneToSubmit && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-          <div className="bg-slate-900 border border-indigo-500/30 rounded-2xl p-6 max-w-lg w-full space-y-4 shadow-2xl">
-            <h3 className="font-bold text-base text-white">Submit Milestone for Verification Gate</h3>
-            <p className="text-xs text-slate-300">
-              Submitting Stage {milestoneToSubmit.sequence}: <strong className="text-white">{milestoneToSubmit.title}</strong>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+          <div className="bg-white border border-indigo-200 rounded-2xl p-6 max-w-lg w-full space-y-4 shadow-2xl">
+            <h3 className="font-bold text-base text-gray-900">Submit Milestone for Verification Gate</h3>
+            <p className="text-xs text-gray-700">
+              Submitting Stage {milestoneToSubmit.sequence}: <strong className="text-gray-900">{milestoneToSubmit.title}</strong>
             </p>
-            <div className="bg-slate-950 p-3 rounded-lg border border-slate-800 text-xs">
-              <span className="text-indigo-400 font-bold block mb-0.5">Required Acceptance Criteria:</span>
-              <p className="text-slate-300 font-mono">{milestoneToSubmit.acceptanceCriteria}</p>
+            <div className="bg-white p-3 rounded-lg border border-gray-200 text-xs">
+              <span className="text-indigo-700 font-bold block mb-0.5">Required Acceptance Criteria:</span>
+              <p className="text-gray-700 font-mono">{milestoneToSubmit.acceptanceCriteria}</p>
             </div>
             <div>
-              <label className="text-xs font-bold text-slate-300 block mb-1">
+              <label className="text-xs font-bold text-gray-700 block mb-1">
                 Evidence Notes & Verification Test Results *
               </label>
               <textarea
@@ -471,11 +486,11 @@ export function App() {
                 value={evidenceNotes}
                 onChange={e => setEvidenceNotes(e.target.value)}
                 placeholder="Detail verification numbers, test logs, simulation results..."
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white"
+                className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900"
               />
             </div>
             <div>
-              <label className="text-xs font-bold text-slate-300 block mb-1">
+              <label className="text-xs font-bold text-gray-700 block mb-1">
                 Deliverable Document / Repository URL
               </label>
               <input
@@ -483,11 +498,11 @@ export function App() {
                 value={evidenceUrl}
                 onChange={e => setEvidenceUrl(e.target.value)}
                 placeholder="https://docs.jginnovative.internal/..."
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white"
+                className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900"
               />
             </div>
             <div className="flex justify-end space-x-2 pt-2">
-              <button onClick={() => setMilestoneToSubmit(null)} className="px-3 py-1.5 text-xs text-slate-400">Cancel</button>
+              <button onClick={() => setMilestoneToSubmit(null)} className="px-3 py-1.5 text-xs text-gray-900">Cancel</button>
               <button
                 onClick={handleMilestoneSubmitReview}
                 className="px-5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-md"
@@ -501,20 +516,20 @@ export function App() {
 
       {/* MODAL: CONDUCT MILESTONE REVIEW */}
       {milestoneToReview && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-          <div className="bg-slate-900 border border-amber-500/30 rounded-2xl p-6 max-w-lg w-full space-y-4 shadow-2xl">
-            <h3 className="font-bold text-base text-white">Milestone Verification Gate Decision</h3>
-            <p className="text-xs text-slate-300">
-              Stage {milestoneToReview.sequence}: <strong className="text-white">{milestoneToReview.title}</strong>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+          <div className="bg-white border border-amber-200 rounded-2xl p-6 max-w-lg w-full space-y-4 shadow-2xl">
+            <h3 className="font-bold text-base text-gray-900">Milestone Verification Gate Decision</h3>
+            <p className="text-xs text-gray-700">
+              Stage {milestoneToReview.sequence}: <strong className="text-gray-900">{milestoneToReview.title}</strong>
             </p>
             {milestoneToReview.evidenceNotes && (
-              <div className="bg-emerald-950/20 p-3 rounded-lg border border-emerald-500/30 text-xs">
-                <span className="text-emerald-400 font-bold block mb-0.5">Submitted Evidence:</span>
-                <p className="text-emerald-200">{milestoneToReview.evidenceNotes}</p>
+              <div className="bg-emerald-50 p-3 rounded-lg border border-emerald-200 text-xs">
+                <span className="text-emerald-700 font-bold block mb-0.5">Submitted Evidence:</span>
+                <p className="text-emerald-900">{milestoneToReview.evidenceNotes}</p>
               </div>
             )}
             <div>
-              <label className="text-xs font-bold text-slate-300 block mb-1">
+              <label className="text-xs font-bold text-gray-700 block mb-1">
                 Review Decision Comments (Mandatory for audit):
               </label>
               <textarea
@@ -523,14 +538,14 @@ export function App() {
                 value={reviewComments}
                 onChange={e => setReviewComments(e.target.value)}
                 placeholder="Enter audit evaluation feedback..."
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white"
+                className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900"
               />
             </div>
             <div className="flex justify-end space-x-2 pt-2">
-              <button onClick={() => setMilestoneToReview(null)} className="px-3 py-1.5 text-xs text-slate-400">Cancel</button>
+              <button onClick={() => setMilestoneToReview(null)} className="px-3 py-1.5 text-xs text-gray-900">Cancel</button>
               <button
                 onClick={() => handleMilestoneReviewDecision('CHANGES_REQUESTED')}
-                className="px-4 py-2 rounded-xl text-xs font-bold bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30"
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-rose-500/10 hover:bg-rose-50 text-rose-700 border border-rose-200"
               >
                 Request Changes
               </button>
@@ -547,36 +562,36 @@ export function App() {
 
       {/* MODAL: REQUEST SCHEDULE CHANGE */}
       {taskForScheduleChange && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-md w-full space-y-4 shadow-2xl">
-            <h3 className="font-bold text-base text-white">Request Schedule Change</h3>
-            <p className="text-xs text-slate-300">
-              Task: <strong className="text-white">{taskForScheduleChange.title}</strong>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 max-w-md w-full space-y-4 shadow-2xl">
+            <h3 className="font-bold text-base text-gray-900">Request Schedule Change</h3>
+            <p className="text-xs text-gray-700">
+              Task: <strong className="text-gray-900">{taskForScheduleChange.title}</strong>
             </p>
-            <div className="bg-slate-950 p-2.5 rounded-lg border border-slate-800 text-xs text-slate-400">
-              Original Due Date: <strong className="text-slate-200">{taskForScheduleChange.originalDueDate}</strong> (Retained in History)
+            <div className="bg-white p-2.5 rounded-lg border border-gray-200 text-xs text-gray-600">
+              Original Due Date: <strong className="text-gray-800">{taskForScheduleChange.originalDueDate}</strong> (Retained in History)
             </div>
             <div>
-              <label className="text-xs font-bold text-slate-300 block mb-1">Proposed New Due Date *</label>
+              <label className="text-xs font-bold text-gray-700 block mb-1">Proposed New Due Date *</label>
               <input
                 type="date"
                 value={newDueDateInput}
                 onChange={e => setNewDueDateInput(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-mono"
+                className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 font-mono"
               />
             </div>
             <div>
-              <label className="text-xs font-bold text-slate-300 block mb-1">Schedule Adjustment Rationale *</label>
+              <label className="text-xs font-bold text-gray-700 block mb-1">Schedule Adjustment Rationale *</label>
               <textarea
                 rows={3}
                 value={scheduleReasonInput}
                 onChange={e => setScheduleReasonInput(e.target.value)}
                 placeholder="Explain justification for deadline change..."
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white"
+                className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900"
               />
             </div>
             <div className="flex justify-end space-x-2 pt-2">
-              <button onClick={() => setTaskForScheduleChange(null)} className="px-3 py-1.5 text-xs text-slate-400">Cancel</button>
+              <button onClick={() => setTaskForScheduleChange(null)} className="px-3 py-1.5 text-xs text-gray-900">Cancel</button>
               <button
                 onClick={handleScheduleChangeSubmit}
                 className="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white"
@@ -639,6 +654,7 @@ export function App() {
       <EditProjectModal
         isOpen={!!projectToEdit}
         project={projectToEdit}
+        users={users}
         onClose={() => setProjectToEdit(null)}
         onSaveProject={handleSaveProject}
       />
@@ -664,3 +680,4 @@ export function App() {
 }
 
 export default App;
+

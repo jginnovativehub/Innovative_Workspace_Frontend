@@ -83,44 +83,44 @@ export const WeeklyReportModal: React.FC<WeeklyReportModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-4xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+      <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-4xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+        <div className="p-5 border-b border-gray-200 flex items-center justify-between bg-white/60">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-purple-500/25">
               <FileText className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <h3 className="text-lg font-bold text-white">Weekly Progress Report</h3>
+                <h3 className="text-lg font-bold text-gray-900">Weekly Progress Report</h3>
                 {report && (
                   <span className={`text-xs px-2 py-0.5 rounded font-bold border ${
-                    report.status === 'REVIEWED' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' :
-                    report.status === 'CHANGES_REQUESTED' ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' :
-                    report.status === 'SUBMITTED' ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30' :
-                    'bg-slate-800 text-slate-400 border-slate-700'
+                    report.status === 'REVIEWED' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                    report.status === 'CHANGES_REQUESTED' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                    report.status === 'SUBMITTED' ? 'bg-blue-50 text-blue-700 border-indigo-200' :
+                    'bg-gray-50 text-gray-600 border-gray-200'
                   }`}>
                     {report.status} • Version {report.currentVersion}
                   </span>
                 )}
               </div>
-              <p className="text-xs text-slate-400">Structured deliverables, blocker triage, and versioned progress logs</p>
+              <p className="text-xs text-gray-600">Structured deliverables, blocker triage, and versioned progress logs</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+          <button onClick={onClose} className="p-1.5 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Tab Selection */}
-        <div className="flex border-b border-slate-800 px-6 pt-2 bg-slate-950/40">
+        <div className="flex border-b border-gray-200 px-6 pt-2 bg-white/40">
           <button
             onClick={() => setActiveTab('EDITOR')}
             className={`pb-3 px-4 text-xs font-bold border-b-2 transition-all flex items-center space-x-2 ${
               activeTab === 'EDITOR'
-                ? 'border-indigo-500 text-indigo-400'
-                : 'border-transparent text-slate-400 hover:text-slate-300'
+                ? 'border-indigo-600 text-indigo-700 font-bold'
+                : 'border-transparent text-gray-600 hover:text-gray-700'
             }`}
           >
             <FileText className="w-4 h-4" />
@@ -131,8 +131,8 @@ export const WeeklyReportModal: React.FC<WeeklyReportModalProps> = ({
               onClick={() => setActiveTab('VERSIONS')}
               className={`pb-3 px-4 text-xs font-bold border-b-2 transition-all flex items-center space-x-2 ${
                 activeTab === 'VERSIONS'
-                  ? 'border-indigo-500 text-indigo-400'
-                  : 'border-transparent text-slate-400 hover:text-slate-300'
+                  ? 'border-indigo-600 text-indigo-700 font-bold'
+                  : 'border-transparent text-gray-600 hover:text-gray-700'
               }`}
             >
               <History className="w-4 h-4" />
@@ -143,14 +143,14 @@ export const WeeklyReportModal: React.FC<WeeklyReportModalProps> = ({
 
         {/* Reviewer Feedback Banner if Changes Requested */}
         {report?.status === 'CHANGES_REQUESTED' && report.reviewerFeedback && (
-          <div className="bg-amber-950/30 border-b border-amber-500/30 p-4 flex items-start space-x-3">
-            <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+          <div className="bg-amber-50 border-b border-amber-200 p-4 flex items-start space-x-3">
+            <AlertTriangle className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
             <div className="text-xs">
-              <span className="font-bold text-amber-300 block mb-0.5">
+              <span className="font-bold text-amber-800 block mb-0.5">
                 Reviewer Changes Requested by {report.reviewerName || 'Management'}:
               </span>
-              <p className="text-amber-200/90 leading-relaxed font-mono">{report.reviewerFeedback}</p>
-              <span className="text-[10px] text-amber-400/70 block mt-1">Please address requested points and resubmit. Previous versions remain preserved.</span>
+              <p className="text-amber-900 leading-relaxed font-mono">{report.reviewerFeedback}</p>
+              <span className="text-[10px] text-amber-800 block mt-1">Please address requested points and resubmit. Previous versions remain preserved.</span>
             </div>
           </div>
         )}
@@ -161,27 +161,27 @@ export const WeeklyReportModal: React.FC<WeeklyReportModalProps> = ({
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1">Period Start</label>
+                  <label className="text-xs font-bold text-gray-700 block mb-1">Period Start</label>
                   <input
                     type="date"
                     value={periodStart}
                     onChange={e => setPeriodStart(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-mono"
+                    className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 font-mono"
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1">Period End</label>
+                  <label className="text-xs font-bold text-gray-700 block mb-1">Period End</label>
                   <input
                     type="date"
                     value={periodEnd}
                     onChange={e => setPeriodEnd(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-mono"
+                    className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 font-mono"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-xs font-bold text-emerald-400 block mb-1">
+                <label className="text-xs font-bold text-emerald-700 block mb-1">
                   Completed This Week (Outcomes & Deliverables, not just activity) *
                 </label>
                 <textarea
@@ -189,12 +189,12 @@ export const WeeklyReportModal: React.FC<WeeklyReportModalProps> = ({
                   value={completedThisWeek}
                   onChange={e => setCompletedThisWeek(e.target.value)}
                   placeholder="Specific deliverables completed, tests run, pull requests merged..."
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:border-indigo-500"
+                  className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 focus:border-indigo-500"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-bold text-cyan-400 block mb-1">
+                <label className="text-xs font-bold text-blue-700 block mb-1">
                   In Progress (Current status, progress summary, next action) *
                 </label>
                 <textarea
@@ -202,13 +202,13 @@ export const WeeklyReportModal: React.FC<WeeklyReportModalProps> = ({
                   value={inProgress}
                   onChange={e => setInProgress(e.target.value)}
                   placeholder="Active tasks being executed..."
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:border-indigo-500"
+                  className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 focus:border-indigo-500"
                 />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-bold text-rose-400 block mb-1">
+                  <label className="text-xs font-bold text-rose-700 block mb-1">
                     Blockers & Risks (Issue, impact, owner needed to resolve)
                   </label>
                   <textarea
@@ -216,11 +216,11 @@ export const WeeklyReportModal: React.FC<WeeklyReportModalProps> = ({
                     value={blockersRisks}
                     onChange={e => setBlockersRisks(e.target.value)}
                     placeholder="Any impediment or schedule bottleneck..."
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white"
+                    className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900"
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-amber-400 block mb-1">
+                  <label className="text-xs font-bold text-amber-700 block mb-1">
                     Proposed Solution / Recovery Plan
                   </label>
                   <textarea
@@ -228,14 +228,14 @@ export const WeeklyReportModal: React.FC<WeeklyReportModalProps> = ({
                     value={proposedSolution}
                     onChange={e => setProposedSolution(e.target.value)}
                     placeholder="Mitigation steps to overcome risks..."
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white"
+                    className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-bold text-indigo-400 block mb-1">
+                  <label className="text-xs font-bold text-indigo-700 block mb-1">
                     Next Week Plan (Specific deliverables and intended completion dates) *
                   </label>
                   <textarea
@@ -243,11 +243,11 @@ export const WeeklyReportModal: React.FC<WeeklyReportModalProps> = ({
                     value={nextWeekPlan}
                     onChange={e => setNextWeekPlan(e.target.value)}
                     placeholder="Committed milestones and tasks for upcoming cycle..."
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white"
+                    className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900"
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1">
+                  <label className="text-xs font-bold text-gray-700 block mb-1">
                     Support / Decisions Required (Approvals, budgets, equipment)
                   </label>
                   <textarea
@@ -255,44 +255,44 @@ export const WeeklyReportModal: React.FC<WeeklyReportModalProps> = ({
                     value={supportDecisionsRequired}
                     onChange={e => setSupportDecisionsRequired(e.target.value)}
                     placeholder="Management input or purchase authorizations..."
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white"
+                    className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900"
                   />
                 </div>
               </div>
             </div>
           ) : (
             <div className="space-y-4">
-              <span className="text-xs text-slate-400 block">
+              <span className="text-xs text-gray-900 block">
                 Preserved audit of submitted revisions for period {report?.periodStart} to {report?.periodEnd}:
               </span>
               {(report?.versions || []).map(v => (
-                <div key={v.id} className="bg-slate-950/70 border border-slate-800 rounded-xl p-4 space-y-3">
-                  <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-                    <span className="text-xs font-bold px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                <div key={v.id} className="bg-white/70 border border-gray-200 rounded-xl p-4 space-y-3">
+                  <div className="flex items-center justify-between pb-2 border-b border-gray-200">
+                    <span className="text-xs font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-indigo-200">
                       Revision Version {v.versionNumber}
                     </span>
-                    <span className="text-[11px] text-slate-500">
+                    <span className="text-[11px] text-gray-600">
                       Submitted: {new Date(v.submittedAt).toLocaleString()} by {v.submitterName}
                     </span>
                   </div>
                   <div className="space-y-2 text-xs">
                     <div>
-                      <strong className="text-emerald-400 block">Completed:</strong>
-                      <p className="text-slate-300">{v.completedThisWeek}</p>
+                      <strong className="text-emerald-700 block">Completed:</strong>
+                      <p className="text-gray-700">{v.completedThisWeek}</p>
                     </div>
                     <div>
-                      <strong className="text-cyan-400 block">In Progress:</strong>
-                      <p className="text-slate-300">{v.inProgress}</p>
+                      <strong className="text-blue-700 block">In Progress:</strong>
+                      <p className="text-gray-700">{v.inProgress}</p>
                     </div>
                     {v.blockersRisks && (
                       <div>
-                        <strong className="text-rose-400 block">Blockers:</strong>
-                        <p className="text-slate-300">{v.blockersRisks}</p>
+                        <strong className="text-rose-700 block">Blockers:</strong>
+                        <p className="text-gray-700">{v.blockersRisks}</p>
                       </div>
                     )}
                     <div>
-                      <strong className="text-indigo-400 block">Next Week Plan:</strong>
-                      <p className="text-slate-300">{v.nextWeekPlan}</p>
+                      <strong className="text-indigo-700 block">Next Week Plan:</strong>
+                      <p className="text-gray-700">{v.nextWeekPlan}</p>
                     </div>
                   </div>
                 </div>
@@ -302,15 +302,15 @@ export const WeeklyReportModal: React.FC<WeeklyReportModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-slate-800 flex justify-between bg-slate-950/80">
-          <button onClick={onClose} className="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white">
+        <div className="p-4 border-t border-gray-200 flex justify-between bg-white/80">
+          <button onClick={onClose} className="px-4 py-2 text-xs font-semibold text-gray-600 hover:text-gray-900">
             Close
           </button>
           <div className="flex space-x-3">
             <button
               disabled={submitting}
               onClick={() => handleSubmit(true)}
-              className="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all flex items-center space-x-1.5"
+              className="px-4 py-2 rounded-xl text-xs font-bold bg-gray-50 hover:bg-gray-100 text-gray-800 border border-gray-200 transition-all flex items-center space-x-1.5"
             >
               <Save className="w-3.5 h-3.5" />
               <span>Save as Draft</span>
@@ -329,4 +329,5 @@ export const WeeklyReportModal: React.FC<WeeklyReportModalProps> = ({
     </div>
   );
 };
+
 
