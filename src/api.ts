@@ -264,7 +264,7 @@ export const api = {
     return request<NotificationItem[]>('/notifications');
   },
 
-  markNotificationRead: async (id: number): Promise<void> => {
+  markNotificationRead: async (id: number | string): Promise<void> => {
     await request(`/notifications/${id}/read`, { method: 'POST' });
   },
 

@@ -105,7 +105,7 @@ export function App() {
     // 1. Real-Time SSE Stream
     const closeStream = api.createNotificationStream((newNotif: NotificationItem) => {
       setNotifications(prev => {
-        if (prev.some(n => n.id === newNotif.id)) return prev;
+        if (prev.some(n => String(n.id) === String(newNotif.id) || (n._id && newNotif._id && String(n._id) === String(newNotif._id)))) return prev;
         toast.info(newNotif.body, newNotif.title);
         return [newNotif, ...prev];
       });
@@ -115,7 +115,15 @@ export function App() {
     const pollInterval = setInterval(async () => {
       try {
         const freshNotifs = await api.getNotifications();
-        setNotifications(freshNotifs);
+        setNotifications(prev => {
+          return freshNotifs.map(fn => {
+            const existing = prev.find(p => String(p.id) === String(fn.id) || (p._id && fn._id && String(p._id) === String(fn._id)));
+            if (existing && existing.readAt && !fn.readAt) {
+              return { ...fn, readAt: existing.readAt };
+            }
+            return fn;
+          });
+        });
       } catch (err) {
         // Continue silently
       }
@@ -363,12 +371,14 @@ export function App() {
         onOpenLeaderboard={() => setIsLeaderboardOpen(true)}
         notifications={notifications}
         onMarkNotificationRead={async (id) => {
+          const now = new Date().toISOString();
+          setNotifications(prev => prev.map(n => (String(n.id) === String(id) || (n._id && String(n._id) === String(id))) ? { ...n, readAt: n.readAt || now } : n));
           await api.markNotificationRead(id);
-          setNotifications(notifications.map(n => n.id === id ? { ...n, readAt: new Date().toISOString() } : n));
         }}
         onMarkAllNotificationsRead={async () => {
+          const now = new Date().toISOString();
+          setNotifications(prev => prev.map(n => ({ ...n, readAt: n.readAt || now })));
           await api.markAllNotificationsRead();
-          setNotifications(notifications.map(n => ({ ...n, readAt: new Date().toISOString() })));
         }}
         onLogout={() => setIsLogoutModalOpen(true)}
         onRefreshAll={handleRefreshAll}

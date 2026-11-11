@@ -177,8 +177,9 @@ export interface ScheduleChangeRequest {
 }
 
 export interface NotificationItem {
-  id: number;
-  recipientId: number;
+  id: number | string;
+  _id?: string;
+  recipientId?: number;
   type: string;
   title: string;
   body: string;

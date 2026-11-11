@@ -10,7 +10,7 @@ interface NavbarProps {
   currentUser: User;
   onOpenLeaderboard: () => void;
   notifications: NotificationItem[];
-  onMarkNotificationRead: (id: number) => void;
+  onMarkNotificationRead: (id: number | string) => void;
   onMarkAllNotificationsRead: () => void;
   onLogout?: () => void;
   onRefreshAll?: () => void;
@@ -108,9 +108,12 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* On-Time Streak */}
-          <div className="flex items-center space-x-1.5 pl-3 border-l border-gray-200 text-amber-700 text-xs font-bold">
-            <Flame className="w-4 h-4 text-amber-500 fill-amber-500" />
-            <span>{currentUser.streakCount}w Streak</span>
+          <div 
+            className="flex items-center space-x-1.5 pl-3 border-l border-gray-200 text-amber-700 text-xs font-bold cursor-help"
+            title={`Consecutive On-Time Delivery Streak: ${currentUser.streakCount ?? 0} weeks with 100% on-time milestone & report delivery`}
+          >
+            <Flame className="w-4 h-4 text-amber-500 fill-amber-500 animate-pulse" />
+            <span>{(currentUser.streakCount ?? 0)}w Streak</span>
           </div>
         </div>
 
