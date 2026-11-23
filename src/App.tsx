@@ -20,6 +20,7 @@ import { DeleteProjectModal } from './components/DeleteProjectModal';
 import { LogoutModal } from './components/LogoutModal';
 import { LoginPage } from './components/LoginPage';
 import { PersonalProjectTracker } from './components/PersonalProjectTracker';
+import { AttendanceView } from './components/AttendanceView';
 
 import { 
   Shield, Crown, Settings, User as UserIcon, RefreshCw, 
@@ -56,6 +57,7 @@ export function App() {
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isPersonalTrackerOpen, setIsPersonalTrackerOpen] = useState(false);
+  const [isAttendanceOpen, setIsAttendanceOpen] = useState(false);
 
   // Single Action Modals
   const [milestoneToSubmit, setMilestoneToSubmit] = useState<Milestone | null>(null);
@@ -383,16 +385,28 @@ export function App() {
         onLogout={() => setIsLogoutModalOpen(true)}
         onRefreshAll={handleRefreshAll}
         refreshing={refreshing}
-        onOpenPersonalTracker={() => setIsPersonalTrackerOpen(!isPersonalTrackerOpen)}
+        onOpenPersonalTracker={() => {
+          setIsPersonalTrackerOpen(!isPersonalTrackerOpen);
+          setIsAttendanceOpen(false);
+        }}
         isPersonalTrackerActive={isPersonalTrackerOpen}
+        onOpenAttendance={() => {
+          setIsAttendanceOpen(!isAttendanceOpen);
+          setIsPersonalTrackerOpen(false);
+        }}
+        isAttendanceActive={isAttendanceOpen}
       />
-
-      
 
       {/* Main Workspace Render - Strictly Gated by currentUser.role */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-1">
-        {/* Toggleable Full-Screen Personal Project Tracker */}
-        {isPersonalTrackerOpen ? (
+        {/* Toggleable Full-Screen Attendance System */}
+        {isAttendanceOpen ? (
+          <AttendanceView
+            currentUser={currentUser}
+            onBackToDashboard={() => setIsAttendanceOpen(false)}
+            allUsers={users}
+          />
+        ) : isPersonalTrackerOpen ? (
           <PersonalProjectTracker
             currentUser={currentUser}
             onBackToDashboard={() => setIsPersonalTrackerOpen(false)}
@@ -468,6 +482,7 @@ export function App() {
                   setIsWeeklyReportModalOpen(true);
                 }}
                 onOpenLeaderboard={() => setIsLeaderboardOpen(true)}
+                onOpenAttendance={() => setIsAttendanceOpen(true)}
               />
             )}
           </>

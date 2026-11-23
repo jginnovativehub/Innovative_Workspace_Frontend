@@ -5,7 +5,7 @@ import {
   CheckSquare, FileText, Sparkles, ShieldAlert, Clock, 
   Plus, Send, Calendar, Check, AlertTriangle, Flame, 
   ExternalLink, ChevronRight, Award, FolderKanban, Users, 
-  Layers, ArrowRight, UserCheck, CheckCircle2, ChevronDown, Lock
+  Layers, ArrowRight, UserCheck, CheckCircle2, ChevronDown, Lock, CalendarCheck
 } from 'lucide-react';
 import { PersonalProjectTracker } from '../PersonalProjectTracker';
 
@@ -23,6 +23,7 @@ interface EmployeeDashboardProps {
   onReviewMilestone?: (m: Milestone) => void;
   onOpenWeeklyReportModal: (r: WeeklyReport | null) => void;
   onOpenLeaderboard: () => void;
+  onOpenAttendance?: () => void;
 }
 
 export const EmployeeDashboard: React.FC<EmployeeDashboardProps> = ({
@@ -38,7 +39,8 @@ export const EmployeeDashboard: React.FC<EmployeeDashboardProps> = ({
   onSubmitMilestoneForReview,
   onReviewMilestone,
   onOpenWeeklyReportModal,
-  onOpenLeaderboard
+  onOpenLeaderboard,
+  onOpenAttendance
 }) => {
   const [activeTab, setActiveTab] = useState<'MY_PROJECTS' | 'QUEST_MAP' | 'MY_TASKS' | 'MY_REPORTS' | 'PERSONAL_PROJECTS'>('MY_PROJECTS');
   const [taskFilter, setTaskFilter] = useState<'ALL' | 'IN_PROGRESS' | 'BLOCKED' | 'SUBMITTED' | 'DONE'>('ALL');
@@ -91,10 +93,21 @@ export const EmployeeDashboard: React.FC<EmployeeDashboardProps> = ({
           </p>
         </div>
 
-          <div className="flex items-center space-x-3 shrink-0">
+          <div className="flex items-center space-x-2.5 shrink-0 flex-wrap gap-y-2">
+            {onOpenAttendance && (
+              <button
+                onClick={onOpenAttendance}
+                className="flex items-center space-x-2 px-3.5 py-2.5 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/20 transition-all cursor-pointer"
+                title="Mark Daily Attendance & View Calendar"
+              >
+                <CalendarCheck className="w-4 h-4" />
+                <span>Mark Attendance / Calendar</span>
+              </button>
+            )}
+
             <button
               onClick={() => onOpenWeeklyReportModal(null)}
-              className="flex items-center space-x-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-lg shadow-emerald-600/30 transition-all cursor-pointer"
+              className="flex items-center space-x-2 px-3.5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
             >
               <FileText className="w-4 h-4" />
               <span>Submit Weekly Report (+50 XP)</span>

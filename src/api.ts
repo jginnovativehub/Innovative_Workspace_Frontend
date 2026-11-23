@@ -1,7 +1,8 @@
 import {
   User, Project, Milestone, Task, WeeklyReport, ScheduleChangeRequest,
   NotificationItem, AuditEvent, DashboardMetrics, LeaderboardUser, Badge, SystemConfig,
-  PersonalProject, PersonalMilestone, PersonalTask
+  PersonalProject, PersonalMilestone, PersonalTask,
+  AttendanceRecord, AttendanceSummary, HolidayRecord, WeekendPolicy
 } from './types';
 
 const rawApiUrl = (import.meta.env.VITE_API_URL ? String(import.meta.env.VITE_API_URL).trim() : '');
@@ -398,6 +399,80 @@ export const api = {
   deletePersonalTask: async (projectId: number | string, taskId: string | number): Promise<PersonalProject> => {
     return request<PersonalProject>(`/personal-projects/${projectId}/tasks/${taskId}`, {
       method: 'DELETE'
+    });
+  },
+
+  // Attendance
+  getAttendance: async (params?: { month?: string; userId?: number; date?: string }): Promise<AttendanceRecord[]> => {
+    const q = new URLSearchParams();
+    if (params?.month) q.set('month', params.month);
+    if (params?.userId) q.set('userId', String(params.userId));
+    if (params?.date) q.set('date', params.date);
+    const qs = q.toString() ? `?${q.toString()}` : '';
+    return request<AttendanceRecord[]>(`/attendance${qs}`);
+  },
+
+  getAttendanceSummary: async (params?: { month?: string; userId?: number }): Promise<AttendanceSummary> => {
+    const q = new URLSearchParams();
+    if (params?.month) q.set('month', params.month);
+    if (params?.userId) q.set('userId', String(params.userId));
+    const qs = q.toString() ? `?${q.toString()}` : '';
+    return request<AttendanceSummary>(`/attendance/summary${qs}`);
+  },
+
+  markAttendance: async (data: { date?: string; status?: string; comment?: string; userId?: number }): Promise<{ status: string; message: string; record: AttendanceRecord }> => {
+    return request<{ status: string; message: string; record: AttendanceRecord }>('/attendance', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  },
+
+  updateAttendance: async (id: number | string, data: { comment?: string; status?: string }): Promise<{ status: string; record: AttendanceRecord }> => {
+    return request<{ status: string; record: AttendanceRecord }>(`/attendance/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data)
+    });
+  },
+
+  deleteAttendance: async (id: number | string): Promise<{ status: string; message: string }> => {
+    return request<{ status: string; message: string }>(`/attendance/${id}`, {
+      method: 'DELETE'
+    });
+  },
+
+  // Holidays & Weekend Policy
+  getHolidays: async (): Promise<{ holidays: HolidayRecord[]; weekendPolicy: WeekendPolicy }> => {
+    return request<{ holidays: HolidayRecord[]; weekendPolicy: WeekendPolicy }>('/holidays');
+  },
+
+  createHoliday: async (data: { date: string; title: string; description?: string; type?: string }): Promise<{ status: string; holiday: HolidayRecord; message?: string }> => {
+    return request<{ status: string; holiday: HolidayRecord; message?: string }>('/holidays', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  },
+
+  updateHoliday: async (id: number | string, data: Partial<HolidayRecord>): Promise<{ status: string; holiday: HolidayRecord }> => {
+    return request<{ status: string; holiday: HolidayRecord }>(`/holidays/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data)
+    });
+  },
+
+  deleteHoliday: async (id: number | string): Promise<{ status: string; message: string }> => {
+    return request<{ status: string; message: string }>(`/holidays/${id}`, {
+      method: 'DELETE'
+    });
+  },
+
+  getWeekendPolicy: async (): Promise<{ status: string; weekendPolicy: WeekendPolicy }> => {
+    return request<{ status: string; weekendPolicy: WeekendPolicy }>('/holidays/weekend-policy');
+  },
+
+  updateWeekendPolicy: async (data: Partial<WeekendPolicy>): Promise<{ status: string; weekendPolicy: WeekendPolicy; message?: string }> => {
+    return request<{ status: string; weekendPolicy: WeekendPolicy; message?: string }>('/holidays/weekend-policy', {
+      method: 'PATCH',
+      body: JSON.stringify(data)
     });
   }
 };

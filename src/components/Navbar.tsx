@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { User, NotificationItem } from '../types';
 import { 
   Trophy, Flame, Bell, ChevronDown, 
-  LogOut, RefreshCw, Lock
+  LogOut, RefreshCw, Lock, CalendarCheck
 } from 'lucide-react';
 import logoImg from '../assets/logo.png';
 
@@ -17,6 +17,8 @@ interface NavbarProps {
   refreshing?: boolean;
   onOpenPersonalTracker?: () => void;
   isPersonalTrackerActive?: boolean;
+  onOpenAttendance?: () => void;
+  isAttendanceActive?: boolean;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -29,7 +31,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   onRefreshAll,
   refreshing = false,
   onOpenPersonalTracker,
-  isPersonalTrackerActive = false
+  isPersonalTrackerActive = false,
+  onOpenAttendance,
+  isAttendanceActive = false
 }) => {
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
@@ -144,6 +148,22 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               <Lock className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Personal Projects</span>
+            </button>
+          )}
+
+          {/* Attendance Calendar & Check-in Button */}
+          {onOpenAttendance && (
+            <button
+              onClick={onOpenAttendance}
+              className={`flex items-center space-x-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all shadow-xs ${
+                isAttendanceActive
+                  ? 'bg-blue-600 text-white border-blue-600'
+                  : 'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-800'
+              }`}
+              title="Open Attendance Calendar & Daily Check-in"
+            >
+              <CalendarCheck className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Attendance</span>
             </button>
           )}
 
