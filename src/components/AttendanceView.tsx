@@ -216,9 +216,9 @@ export const AttendanceView: React.FC<AttendanceViewProps> = ({
   return (
     <div className="space-y-6 text-left max-w-7xl mx-auto pb-12">
       {/* Top Banner & Navigation */}
-      <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center space-x-2 mb-1.5">
+      <div className="bg-white border border-gray-200 rounded-2xl p-4 sm:p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2 mb-1.5">
             <button
               onClick={onBackToDashboard}
               className="flex items-center space-x-1 text-xs font-semibold text-gray-500 hover:text-gray-900 transition-colors"
@@ -233,9 +233,9 @@ export const AttendanceView: React.FC<AttendanceViewProps> = ({
             </span>
           </div>
 
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight flex items-center space-x-2">
+          <h1 className="text-lg sm:text-2xl font-bold text-gray-900 tracking-tight flex flex-wrap items-center gap-2">
             <span>Monthly Attendance Calendar</span>
-            <span className="text-xs px-2 py-0.5 rounded-md font-mono font-medium bg-gray-100 text-gray-600">
+            <span className="text-xs px-2 py-0.5 rounded-md font-mono font-medium bg-gray-100 text-gray-600 max-w-full truncate">
               {targetUser.fullName}
             </span>
           </h1>
@@ -304,11 +304,11 @@ export const AttendanceView: React.FC<AttendanceViewProps> = ({
             </div>
 
             {/* Department Filter & Employee Dropdown */}
-            <div className="flex items-center space-x-2 flex-wrap gap-y-2">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
               <select
                 value={deptFilter}
                 onChange={e => setDeptFilter(e.target.value)}
-                className="px-2.5 py-1.5 rounded-lg bg-white border border-gray-200 text-xs text-gray-700 focus:outline-none focus:border-blue-500"
+                className="w-full sm:w-auto px-2.5 py-1.5 rounded-lg bg-white border border-gray-200 text-xs text-gray-700 focus:outline-none focus:border-blue-500"
               >
                 <option value="ALL">All Departments</option>
                 {Array.from(new Set(allUsers.map(u => u.department).filter(Boolean))).map(d => (
@@ -319,7 +319,7 @@ export const AttendanceView: React.FC<AttendanceViewProps> = ({
               <select
                 value={selectedUserId}
                 onChange={e => setSelectedUserId(Number(e.target.value))}
-                className="px-3 py-1.5 rounded-lg bg-white border border-gray-200 text-xs font-semibold text-gray-900 focus:outline-none focus:border-blue-500 shadow-2xs"
+                className="w-full sm:w-auto max-w-full px-3 py-1.5 rounded-lg bg-white border border-gray-200 text-xs font-semibold text-gray-900 focus:outline-none focus:border-blue-500 shadow-2xs"
               >
                 {allUsers
                   .filter(u => deptFilter === 'ALL' || u.department === deptFilter)
@@ -480,18 +480,18 @@ export const AttendanceView: React.FC<AttendanceViewProps> = ({
         {/* Card 2 & 3: Monthly Statistics Cards */}
         <div className="lg:col-span-2 bg-white border border-gray-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center space-x-2">
-                <span className="p-2 rounded-xl bg-blue-50 text-blue-700 border border-blue-100">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+              <div className="flex items-center space-x-2 min-w-0">
+                <span className="p-2 rounded-xl bg-blue-50 text-blue-700 border border-blue-100 shrink-0">
                   <CalendarDays className="w-4 h-4" />
                 </span>
-                <div>
+                <div className="min-w-0">
                   <h3 className="text-sm font-bold text-gray-900">{monthName} Statistics</h3>
-                  <p className="text-xs text-gray-500">Summary performance metrics for {targetUser.fullName}</p>
+                  <p className="text-xs text-gray-500 truncate">Summary performance metrics for {targetUser.fullName}</p>
                 </div>
               </div>
 
-              <span className="text-xs font-semibold px-3 py-1 rounded-full bg-gray-100 text-gray-700 border border-gray-200">
+              <span className="text-xs font-semibold px-3 py-1 rounded-full bg-gray-100 text-gray-700 border border-gray-200 shrink-0">
                 Monthly Performance
               </span>
             </div>
@@ -604,17 +604,17 @@ export const AttendanceView: React.FC<AttendanceViewProps> = ({
         </div>
 
         {/* Days of Week Header */}
-        <div className="grid grid-cols-7 border-b-2 border-gray-300 bg-gray-100 divide-x divide-gray-300 text-center text-xs font-bold text-gray-700 py-3 tracking-wider uppercase">
+        <div className="grid grid-cols-7 border-b-2 border-gray-300 bg-gray-100 divide-x divide-gray-300 text-center text-[10px] sm:text-xs font-bold text-gray-700 py-2 sm:py-3 tracking-wider uppercase">
           <div className="py-0.5">Mon</div>
           <div className="py-0.5">Tue</div>
           <div className="py-0.5">Wed</div>
           <div className="py-0.5">Thu</div>
           <div className="py-0.5">Fri</div>
           <div className={`py-0.5 ${weekendPolicy.saturdayHoliday ? 'text-rose-600 bg-rose-50/50' : 'text-gray-700'}`}>
-            Sat {weekendPolicy.saturdayHoliday ? '(Off)' : ''}
+            Sat <span className="hidden sm:inline">{weekendPolicy.saturdayHoliday ? '(Off)' : ''}</span>
           </div>
           <div className={`py-0.5 ${weekendPolicy.sundayHoliday ? 'text-rose-600 bg-rose-50/50' : 'text-gray-700'}`}>
-            Sun {weekendPolicy.sundayHoliday ? '(Off)' : ''}
+            Sun <span className="hidden sm:inline">{weekendPolicy.sundayHoliday ? '(Off)' : ''}</span>
           </div>
         </div>
 
@@ -622,7 +622,7 @@ export const AttendanceView: React.FC<AttendanceViewProps> = ({
         <div className="grid grid-cols-7 gap-[1px] bg-gray-300">
           {/* Leading blank days */}
           {Array.from({ length: startOffset }).map((_, i) => (
-            <div key={`blank-${i}`} className="min-h-[105px] sm:min-h-[120px] bg-gray-100/70 p-2.5 opacity-60" />
+            <div key={`blank-${i}`} className="min-h-[68px] sm:min-h-[120px] bg-gray-100/70 p-1 sm:p-2.5 opacity-60 min-w-0 overflow-hidden" />
           ))}
 
           {/* Month Days */}
@@ -640,19 +640,24 @@ export const AttendanceView: React.FC<AttendanceViewProps> = ({
 
             let badgeBg = 'bg-gray-100 text-gray-500';
             let label = '';
+            let shortLabel = '';
             if (record) {
               if (record.status === 'PRESENT') {
                 badgeBg = 'bg-emerald-50 text-emerald-700 border border-emerald-300';
                 label = 'Present';
+                shortLabel = 'P';
               } else if (record.status === 'HALF_DAY') {
                 badgeBg = 'bg-amber-50 text-amber-700 border border-amber-300';
                 label = 'Half Day';
+                shortLabel = 'HD';
               } else if (record.status === 'ON_LEAVE') {
                 badgeBg = 'bg-blue-50 text-blue-700 border border-blue-300';
                 label = 'On Leave';
+                shortLabel = 'L';
               } else if (record.status === 'ABSENT') {
                 badgeBg = 'bg-rose-50 text-rose-700 border border-rose-300';
                 label = 'Absent';
+                shortLabel = 'A';
               }
             }
 
@@ -660,7 +665,7 @@ export const AttendanceView: React.FC<AttendanceViewProps> = ({
               <div
                 key={dateStr}
                 onClick={() => setSelectedDayRecord({ date: dateStr, record })}
-                className={`min-h-[105px] sm:min-h-[120px] p-2.5 transition-all flex flex-col justify-between cursor-pointer group ${
+                className={`min-h-[68px] sm:min-h-[120px] p-1 sm:p-2.5 min-w-0 overflow-hidden transition-all flex flex-col justify-between cursor-pointer group ${
                   isToday 
                     ? 'bg-blue-50/40 ring-2 ring-blue-600 ring-inset z-10' 
                     : holiday
@@ -671,9 +676,9 @@ export const AttendanceView: React.FC<AttendanceViewProps> = ({
                 }`}
               >
                 {/* Day Header */}
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 items-center">
                   <span
-                    className={`text-xs font-bold flex items-center justify-center min-w-[24px] h-6 px-1.5 rounded-lg transition-colors ${
+                    className={`text-[11px] sm:text-xs font-bold flex items-center justify-center min-w-[22px] sm:min-w-[24px] h-5 sm:h-6 px-1 sm:px-1.5 rounded-md sm:rounded-lg transition-colors shrink-0 ${
                       isToday
                         ? 'bg-blue-600 text-white shadow-xs'
                         : holiday
@@ -687,30 +692,42 @@ export const AttendanceView: React.FC<AttendanceViewProps> = ({
                   </span>
 
                   {holiday ? (
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-purple-100 text-purple-800 border border-purple-300 flex items-center space-x-1 shrink-0">
-                      <Sparkles className="w-2.5 h-2.5 text-purple-600" />
-                      <span>Holiday</span>
+                    <span className="text-[9px] sm:text-[10px] font-bold px-1 sm:px-2 py-0.5 rounded-md bg-purple-100 text-purple-800 border border-purple-300 flex items-center space-x-1 shrink-0 max-w-full">
+                      <Sparkles className="w-2.5 h-2.5 text-purple-600 shrink-0" />
+                      <span className="hidden sm:inline">Holiday</span>
                     </span>
                   ) : record ? (
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${badgeBg}`}>
-                      {label}
+                    <span className={`text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-md truncate max-w-full ${badgeBg}`}>
+                      <span className="sm:hidden">{shortLabel}</span>
+                      <span className="hidden sm:inline">{label}</span>
                     </span>
                   ) : isWeekendOff ? (
-                    <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-gray-200/80 text-gray-600 border border-gray-300">
-                      {isSunday ? 'Sun Off' : 'Sat Off'}
+                    <span className="text-[9px] sm:text-[10px] font-semibold px-1 sm:px-1.5 py-0.5 rounded bg-gray-200/80 text-gray-600 border border-gray-300 truncate max-w-full">
+                      <span className="sm:hidden">Off</span>
+                      <span className="hidden sm:inline">{isSunday ? 'Sun Off' : 'Sat Off'}</span>
                     </span>
                   ) : null}
                 </div>
 
-                {/* Day Body / Comment Preview & Holiday title */}
-                <div className="my-1.5 flex-1 space-y-1">
+                {/* Mobile Compact Indicator Dots */}
+                <div className="sm:hidden flex items-center justify-center gap-1 mt-1 min-h-[10px]">
+                  {record?.comment && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500" title="Has comment" />
+                  )}
+                  {holiday && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-purple-500" title={holiday.title} />
+                  )}
+                </div>
+
+                {/* Day Body / Comment Preview & Holiday title (Tablet & Desktop) */}
+                <div className="hidden sm:block my-1.5 flex-1 space-y-1">
                   {holiday && (
                     <div 
                       className="bg-purple-100/90 border border-purple-200 text-purple-900 font-bold rounded-lg px-2 py-1 text-[11px] flex items-center space-x-1.5 shadow-2xs line-clamp-1"
                       title={holiday.description || holiday.title}
                     >
                       <PartyPopper className="w-3 h-3 text-purple-600 shrink-0" />
-                      <span>{holiday.title}</span>
+                      <span className="truncate">{holiday.title}</span>
                     </div>
                   )}
 
@@ -731,9 +748,9 @@ export const AttendanceView: React.FC<AttendanceViewProps> = ({
                   )}
                 </div>
 
-                {/* Footer Check-in Time */}
+                {/* Footer Check-in Time (Tablet & Desktop) */}
                 {record?.markedAt && (
-                  <div className="text-[9px] text-gray-500 font-mono flex items-center space-x-1 pt-1 border-t border-gray-100">
+                  <div className="hidden sm:flex text-[9px] text-gray-500 font-mono items-center space-x-1 pt-1 border-t border-gray-100">
                     <Clock className="w-2.5 h-2.5 text-gray-400" />
                     <span>{new Date(record.markedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                   </div>
@@ -747,9 +764,9 @@ export const AttendanceView: React.FC<AttendanceViewProps> = ({
       {/* Selected Day Details Modal */}
       {selectedDayRecord && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/40 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full border border-gray-200 shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-white rounded-2xl max-w-md w-full border border-gray-200 shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] flex flex-col">
             {/* Modal Header */}
-            <div className="p-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
+            <div className="p-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between shrink-0">
               <div className="flex items-center space-x-2">
                 <Calendar className="w-4 h-4 text-blue-600" />
                 <h3 className="text-sm font-bold text-gray-900">
@@ -770,7 +787,7 @@ export const AttendanceView: React.FC<AttendanceViewProps> = ({
             </div>
 
             {/* Modal Body */}
-            <div className="p-5 space-y-4 text-xs">
+            <div className="p-5 space-y-4 text-xs overflow-y-auto flex-1">
               {/* Check if this date is a declared Holiday */}
               {(() => {
                 const dayHoliday = holidays.find(h => h.date === selectedDayRecord.date);

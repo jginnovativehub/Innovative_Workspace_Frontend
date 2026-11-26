@@ -53,27 +53,27 @@ export const BlockerModal: React.FC<BlockerModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-      <div className="bg-white border border-rose-200 rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl flex flex-col">
+      <div className="bg-white border border-rose-200 rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="p-5 border-b border-gray-200 flex items-center justify-between bg-rose-50">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-700 shadow-lg shadow-rose-500/20">
+        <div className="p-4 sm:p-5 border-b border-gray-200 flex items-center justify-between bg-rose-50 shrink-0">
+          <div className="flex items-center space-x-3 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-700 shadow-lg shadow-rose-500/20 shrink-0">
               <ShieldAlert className="w-5 h-5" />
             </div>
-            <div>
-              <h3 className="text-base font-bold text-gray-900 flex items-center space-x-1.5">
-                <span>Formal Blocker & Risk Exception Form</span>
+            <div className="min-w-0">
+              <h3 className="text-sm sm:text-base font-bold text-gray-900 flex items-center space-x-1.5">
+                <span className="truncate">Formal Blocker & Risk Exception Form</span>
               </h3>
               <p className="text-xs text-rose-700/80">Immediate escalation protocol for stalled or high-risk deliverables</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors">
+          <button onClick={onClose} className="p-1.5 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors shrink-0">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1">
           <div className="bg-gray-50 p-3 rounded-lg border border-gray-200 text-xs">
             <span className="text-gray-600 block font-semibold">Target Task:</span>
             <span className="text-gray-900 font-bold block">{task.title}</span>

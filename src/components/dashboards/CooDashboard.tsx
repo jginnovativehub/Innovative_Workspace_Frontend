@@ -105,11 +105,11 @@ export const CooDashboard: React.FC<CooDashboardProps> = ({
           </p>
         </div>
 
-          <div className="flex items-center space-x-3 shrink-0">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 shrink-0">
             {onCreateUser && (
               <button
                 onClick={() => setShowProvisionModal(true)}
-                className="flex items-center space-x-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 shadow-md transition-all"
+                className="flex items-center space-x-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 shadow-md transition-all"
               >
                 <UserPlus className="w-4 h-4 text-indigo-700" />
                 <span>Provision Contributor</span>
@@ -118,7 +118,7 @@ export const CooDashboard: React.FC<CooDashboardProps> = ({
             {onOpenProjectWizard && (
               <button
                 onClick={onOpenProjectWizard}
-                className="flex items-center space-x-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-lg shadow-indigo-600/30 transition-all"
+                className="flex items-center space-x-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-lg shadow-indigo-600/30 transition-all"
               >
                 <Plus className="w-4 h-4" />
                 <span>Launch Project Plan</span>
@@ -126,7 +126,7 @@ export const CooDashboard: React.FC<CooDashboardProps> = ({
             )}
             <button
               onClick={onOpenReviewInbox}
-              className="flex items-center space-x-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/30 transition-all"
+              className="flex items-center space-x-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/30 transition-all"
             >
               <Inbox className="w-4 h-4" />
               <span>Open Review Cockpit ({reviewInboxData?.totalBacklog || 0})</span>
@@ -180,10 +180,10 @@ export const CooDashboard: React.FC<CooDashboardProps> = ({
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-gray-200 gap-6 text-xs font-bold">
+      <div className="flex border-b border-gray-200 gap-4 sm:gap-6 text-xs font-bold overflow-x-auto no-scrollbar">
         <button
           onClick={() => setActiveTab('REVIEW_QUEUE')}
-          className={`pb-3 border-b-2 flex items-center space-x-2 transition-all ${
+          className={`pb-3 border-b-2 flex items-center space-x-2 transition-all whitespace-nowrap shrink-0 ${
             activeTab === 'REVIEW_QUEUE' ? 'border-indigo-600 text-indigo-700 font-bold' : 'border-transparent text-gray-600 hover:text-gray-800'
           }`}
         >
@@ -193,7 +193,7 @@ export const CooDashboard: React.FC<CooDashboardProps> = ({
 
         <button
           onClick={() => setActiveTab('PROJECTS')}
-          className={`pb-3 border-b-2 flex items-center space-x-2 transition-all ${
+          className={`pb-3 border-b-2 flex items-center space-x-2 transition-all whitespace-nowrap shrink-0 ${
             activeTab === 'PROJECTS' ? 'border-indigo-600 text-indigo-700 font-bold' : 'border-transparent text-gray-600 hover:text-gray-800'
           }`}
         >
@@ -203,7 +203,7 @@ export const CooDashboard: React.FC<CooDashboardProps> = ({
 
         <button
           onClick={() => setActiveTab('BLOCKERS')}
-          className={`pb-3 border-b-2 flex items-center space-x-2 transition-all ${
+          className={`pb-3 border-b-2 flex items-center space-x-2 transition-all whitespace-nowrap shrink-0 ${
             activeTab === 'BLOCKERS' ? 'border-indigo-600 text-indigo-700 font-bold' : 'border-transparent text-gray-600 hover:text-gray-800'
           }`}
         >
@@ -213,7 +213,7 @@ export const CooDashboard: React.FC<CooDashboardProps> = ({
 
         <button
           onClick={() => setActiveTab('COMPLIANCE')}
-          className={`pb-3 border-b-2 flex items-center space-x-2 transition-all ${
+          className={`pb-3 border-b-2 flex items-center space-x-2 transition-all whitespace-nowrap shrink-0 ${
             activeTab === 'COMPLIANCE' ? 'border-indigo-600 text-indigo-700 font-bold' : 'border-transparent text-gray-600 hover:text-gray-800'
           }`}
         >
@@ -223,7 +223,7 @@ export const CooDashboard: React.FC<CooDashboardProps> = ({
 
         <button
           onClick={() => setActiveTab('MY_WORK')}
-          className={`pb-3 border-b-2 flex items-center space-x-2 transition-all ${
+          className={`pb-3 border-b-2 flex items-center space-x-2 transition-all whitespace-nowrap shrink-0 ${
             activeTab === 'MY_WORK' ? 'border-indigo-600 text-indigo-700 font-bold' : 'border-transparent text-gray-600 hover:text-gray-800'
           }`}
         >
@@ -233,12 +233,12 @@ export const CooDashboard: React.FC<CooDashboardProps> = ({
 
         <button
           onClick={() => setActiveTab('PERSONAL_PROJECTS')}
-          className={`pb-3 border-b-2 flex items-center space-x-2 transition-all ${
+          className={`pb-3 border-b-2 flex items-center space-x-2 transition-all whitespace-nowrap shrink-0 ${
             activeTab === 'PERSONAL_PROJECTS' ? 'border-emerald-600 text-emerald-700 font-bold' : 'border-transparent text-gray-600 hover:text-gray-800'
           }`}
         >
           <Lock className="w-4 h-4 text-emerald-700" />
-          <span>🔒 Personal Project Tracker</span>
+          <span>Personal Project Tracker</span>
         </button>
       </div>
 
@@ -421,7 +421,7 @@ export const CooDashboard: React.FC<CooDashboardProps> = ({
                   </div>
 
                   {/* Project Actions */}
-                  <div className="flex items-center justify-end space-x-2 pt-3 border-t border-gray-200">
+                  <div className="flex flex-wrap items-center justify-end gap-2 pt-3 border-t border-gray-200">
                     <button
                       onClick={() => setRoadmapProject(p)}
                       className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-cyan-50 hover:bg-cyan-100 text-cyan-800 border border-cyan-200 transition-all cursor-pointer"
@@ -545,7 +545,8 @@ export const CooDashboard: React.FC<CooDashboardProps> = ({
           </div>
 
           <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-            <table className="w-full text-left text-xs">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs min-w-[600px]">
               <thead>
                 <tr className="border-b border-gray-200 text-gray-600 font-semibold uppercase tracking-wider">
                   <th className="p-3.5">Contributor</th>
@@ -592,6 +593,7 @@ export const CooDashboard: React.FC<CooDashboardProps> = ({
                 })}
               </tbody>
             </table>
+            </div>
           </div>
         </div>
       )}
@@ -646,7 +648,7 @@ export const CooDashboard: React.FC<CooDashboardProps> = ({
       {/* COO Employee Provisioning Modal */}
       {showProvisionModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-          <div className="bg-white border border-indigo-500/40 rounded-2xl max-w-md w-full p-6 text-left shadow-2xl space-y-4">
+          <div className="bg-white border border-indigo-500/40 rounded-2xl max-w-md w-full p-5 sm:p-6 text-left shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-gray-200 pb-3">
               <div className="flex items-center space-x-2.5">
                 <div className="p-2 rounded-xl bg-blue-50 text-blue-700">

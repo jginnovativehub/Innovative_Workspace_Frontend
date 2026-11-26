@@ -237,7 +237,7 @@ export const EmployeeDashboard: React.FC<EmployeeDashboardProps> = ({
       )}
 
       {/* Tabs */}
-      <div className="flex border-b border-gray-200 gap-6 text-xs font-bold overflow-x-auto">
+      <div className="flex border-b border-gray-200 gap-4 sm:gap-6 text-xs font-bold overflow-x-auto no-scrollbar">
         <button
           onClick={() => setActiveTab('MY_PROJECTS')}
           className={`pb-3 border-b-2 flex items-center space-x-2 transition-all cursor-pointer whitespace-nowrap ${
@@ -520,15 +520,15 @@ export const EmployeeDashboard: React.FC<EmployeeDashboardProps> = ({
               <p className="text-xs text-gray-600">Update status, submit completed deliverables with evidence, or report blockers.</p>
             </div>
 
-            <div className="flex items-center space-x-2">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
               {(['ALL', 'IN_PROGRESS', 'BLOCKED', 'SUBMITTED', 'DONE'] as const).map(filter => (
                 <button
                   key={filter}
                   onClick={() => setTaskFilter(filter)}
-                  className={`cursor-pointer px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                  className={`cursor-pointer px-2.5 py-1 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
                     taskFilter === filter 
                       ? 'bg-emerald-600 text-white shadow-md' 
-                      : 'bg-white text-gray-600 hover:text-gray-800'
+                      : 'bg-white text-gray-600 hover:text-gray-800 border border-gray-200'
                   }`}
                 >
                   {filter}
@@ -614,7 +614,7 @@ export const EmployeeDashboard: React.FC<EmployeeDashboardProps> = ({
                     </div>
 
                     {/* Actions */}
-                    <div className="pt-3 mt-3 border-t border-gray-200 flex items-center justify-between gap-2">
+                    <div className="pt-3 mt-3 border-t border-gray-200 flex flex-wrap items-center justify-between gap-2">
                       <div className="flex items-center space-x-1">
                         <button
                           onClick={() => onOpenBlockerModal(t)}
@@ -650,7 +650,7 @@ export const EmployeeDashboard: React.FC<EmployeeDashboardProps> = ({
       {/* TAB 4: MY WEEKLY REPORTS (Strict Privacy) */}
       {activeTab === 'MY_REPORTS' && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between pb-2 border-b border-gray-200">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-gray-200">
             <div>
               <h3 className="text-sm font-bold text-gray-900">My Weekly Progress Reports</h3>
               <p className="text-xs text-gray-600">
@@ -659,7 +659,7 @@ export const EmployeeDashboard: React.FC<EmployeeDashboardProps> = ({
             </div>
             <button
               onClick={() => onOpenWeeklyReportModal(null)}
-              className="cursor-pointer flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md transition-all"
+              className="cursor-pointer self-start sm:self-auto shrink-0 flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md transition-all"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Compose Weekly Report</span>

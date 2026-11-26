@@ -100,11 +100,11 @@ export const CeoDashboard: React.FC<CeoDashboardProps> = ({
           </p>
         </div>
 
-          <div className="flex items-center space-x-3 shrink-0">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 shrink-0">
             {onCreateUser && (
               <button
                 onClick={() => setShowProvisionModal(true)}
-                className="flex items-center space-x-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-white hover:bg-purple-50 border border-gray-300 hover:border-purple-300 text-gray-700 hover:text-purple-700 shadow-sm transition-all"
+                className="flex items-center space-x-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold bg-white hover:bg-purple-50 border border-gray-300 hover:border-purple-300 text-gray-700 hover:text-purple-700 shadow-sm transition-all"
               >
                 <UserPlus className="w-4 h-4 text-purple-600" />
                 <span>Provision Team Member</span>
@@ -112,7 +112,7 @@ export const CeoDashboard: React.FC<CeoDashboardProps> = ({
             )}
             <button
               onClick={onOpenProjectWizard}
-              className="flex items-center space-x-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-lg shadow-purple-600/30 transition-all"
+              className="flex items-center space-x-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-lg shadow-purple-600/30 transition-all"
             >
               <Plus className="w-4 h-4" />
               <span>Launch New Project Plan</span>
@@ -172,10 +172,10 @@ export const CeoDashboard: React.FC<CeoDashboardProps> = ({
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-gray-200 gap-6 text-xs font-bold">
+      <div className="flex border-b border-gray-200 gap-4 sm:gap-6 text-xs font-bold overflow-x-auto no-scrollbar">
         <button
           onClick={() => setActiveTab('PORTFOLIO')}
-          className={`pb-3 border-b-2 flex items-center space-x-2 transition-all ${
+          className={`pb-3 border-b-2 flex items-center space-x-2 transition-all whitespace-nowrap shrink-0 ${
             activeTab === 'PORTFOLIO' ? 'border-purple-600 text-purple-700 font-bold' : 'border-transparent text-gray-600 hover:text-gray-800'
           }`}
         >
@@ -185,7 +185,7 @@ export const CeoDashboard: React.FC<CeoDashboardProps> = ({
 
         <button
           onClick={() => setActiveTab('SIGN_OFFS')}
-          className={`pb-3 border-b-2 flex items-center space-x-2 transition-all ${
+          className={`pb-3 border-b-2 flex items-center space-x-2 transition-all whitespace-nowrap shrink-0 ${
             activeTab === 'SIGN_OFFS' ? 'border-purple-600 text-purple-700 font-bold' : 'border-transparent text-gray-600 hover:text-gray-800'
           }`}
         >
@@ -195,7 +195,7 @@ export const CeoDashboard: React.FC<CeoDashboardProps> = ({
 
         <button
           onClick={() => setActiveTab('MY_DELIVERABLES')}
-          className={`pb-3 border-b-2 flex items-center space-x-2 transition-all ${
+          className={`pb-3 border-b-2 flex items-center space-x-2 transition-all whitespace-nowrap shrink-0 ${
             activeTab === 'MY_DELIVERABLES' ? 'border-purple-600 text-purple-700 font-bold' : 'border-transparent text-gray-600 hover:text-gray-800'
           }`}
         >
@@ -205,12 +205,12 @@ export const CeoDashboard: React.FC<CeoDashboardProps> = ({
 
         <button
           onClick={() => setActiveTab('PERSONAL_PROJECTS')}
-          className={`pb-3 border-b-2 flex items-center space-x-2 transition-all ${
+          className={`pb-3 border-b-2 flex items-center space-x-2 transition-all whitespace-nowrap shrink-0 ${
             activeTab === 'PERSONAL_PROJECTS' ? 'border-emerald-600 text-emerald-700 font-bold' : 'border-transparent text-gray-600 hover:text-gray-800'
           }`}
         >
           <Lock className="w-4 h-4 text-emerald-700" />
-          <span>🔒 Personal Project Tracker</span>
+          <span>Personal Project Tracker</span>
         </button>
       </div>
 
@@ -280,7 +280,7 @@ export const CeoDashboard: React.FC<CeoDashboardProps> = ({
                 </div>
 
                 {/* Project Actions */}
-                <div className="flex items-center justify-end space-x-2 pt-3 border-t border-gray-200">
+                <div className="flex flex-wrap items-center justify-end gap-2 pt-3 border-t border-gray-200">
                   <button
                     onClick={() => setRoadmapProject(p)}
                     className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-cyan-50 hover:bg-cyan-100 text-cyan-800 border border-cyan-200 transition-all cursor-pointer"
@@ -425,7 +425,7 @@ export const CeoDashboard: React.FC<CeoDashboardProps> = ({
       {/* CEO Team Member Provisioning Modal */}
       {showProvisionModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-          <div className="bg-white border border-purple-500/40 rounded-2xl max-w-md w-full p-6 text-left shadow-2xl space-y-4">
+          <div className="bg-white border border-purple-500/40 rounded-2xl max-w-md w-full p-5 sm:p-6 text-left shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-gray-200 pb-3">
               <div className="flex items-center space-x-2.5">
                 <div className="p-2 rounded-xl bg-purple-500/20 text-purple-800">

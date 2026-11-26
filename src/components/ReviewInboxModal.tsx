@@ -117,10 +117,10 @@ export const ReviewInboxModal: React.FC<ReviewInboxModalProps> = ({
         </div>
 
         {/* Tab Strip */}
-        <div className="flex border-b border-gray-200 px-6 pt-2 bg-white/40">
+        <div className="flex border-b border-gray-200 px-4 sm:px-6 pt-2 bg-white/40 overflow-x-auto no-scrollbar shrink-0">
           <button
             onClick={() => setActiveTab('MILESTONES')}
-            className={`pb-3 px-4 text-xs font-bold border-b-2 transition-all flex items-center space-x-2 ${
+            className={`pb-3 px-3 sm:px-4 text-xs font-bold border-b-2 transition-all flex items-center space-x-2 whitespace-nowrap shrink-0 ${
               activeTab === 'MILESTONES'
                 ? 'border-indigo-600 text-indigo-700 font-bold'
                 : 'border-transparent text-gray-600 hover:text-gray-700'
@@ -130,7 +130,7 @@ export const ReviewInboxModal: React.FC<ReviewInboxModalProps> = ({
           </button>
           <button
             onClick={() => setActiveTab('TASKS')}
-            className={`pb-3 px-4 text-xs font-bold border-b-2 transition-all flex items-center space-x-2 ${
+            className={`pb-3 px-3 sm:px-4 text-xs font-bold border-b-2 transition-all flex items-center space-x-2 whitespace-nowrap shrink-0 ${
               activeTab === 'TASKS'
                 ? 'border-indigo-600 text-indigo-700 font-bold'
                 : 'border-transparent text-gray-600 hover:text-gray-700'
@@ -140,7 +140,7 @@ export const ReviewInboxModal: React.FC<ReviewInboxModalProps> = ({
           </button>
           <button
             onClick={() => setActiveTab('REPORTS')}
-            className={`pb-3 px-4 text-xs font-bold border-b-2 transition-all flex items-center space-x-2 ${
+            className={`pb-3 px-3 sm:px-4 text-xs font-bold border-b-2 transition-all flex items-center space-x-2 whitespace-nowrap shrink-0 ${
               activeTab === 'REPORTS'
                 ? 'border-indigo-600 text-indigo-700 font-bold'
                 : 'border-transparent text-gray-600 hover:text-gray-700'
@@ -150,7 +150,7 @@ export const ReviewInboxModal: React.FC<ReviewInboxModalProps> = ({
           </button>
           <button
             onClick={() => setActiveTab('SCHEDULES')}
-            className={`pb-3 px-4 text-xs font-bold border-b-2 transition-all flex items-center space-x-2 ${
+            className={`pb-3 px-3 sm:px-4 text-xs font-bold border-b-2 transition-all flex items-center space-x-2 whitespace-nowrap shrink-0 ${
               activeTab === 'SCHEDULES'
                 ? 'border-indigo-600 text-indigo-700 font-bold'
                 : 'border-transparent text-gray-600 hover:text-gray-700'
@@ -215,7 +215,7 @@ export const ReviewInboxModal: React.FC<ReviewInboxModalProps> = ({
                     </div>
                   )}
 
-                  <div className="flex justify-end space-x-3 pt-2">
+                  <div className="flex flex-wrap justify-end gap-2 sm:gap-3 pt-2">
                     <button
                       disabled={submittingId === m.id}
                       onClick={() => handleMilestoneAction(m.id, 'CHANGES_REQUESTED')}
@@ -263,7 +263,7 @@ export const ReviewInboxModal: React.FC<ReviewInboxModalProps> = ({
                     </div>
                   )}
 
-                  <div className="flex justify-end space-x-3 pt-2">
+                  <div className="flex flex-wrap justify-end gap-2 sm:gap-3 pt-2">
                     <button
                       disabled={submittingId === t.id}
                       onClick={() => handleTaskAction(t.id, 'CHANGES_REQUESTED')}
@@ -332,7 +332,7 @@ export const ReviewInboxModal: React.FC<ReviewInboxModalProps> = ({
                       </div>
                     )}
 
-                    <div className="flex justify-end space-x-3 pt-2">
+                    <div className="flex flex-wrap justify-end gap-2 sm:gap-3 pt-2">
                       <button
                         disabled={submittingId === r.id}
                         onClick={() => handleReportAction(r.id, 'CHANGES_REQUESTED')}
@@ -389,7 +389,7 @@ export const ReviewInboxModal: React.FC<ReviewInboxModalProps> = ({
                     <p>{sq.reason}</p>
                   </div>
 
-                  <div className="flex justify-end space-x-3 pt-2">
+                  <div className="flex flex-wrap justify-end gap-2 sm:gap-3 pt-2">
                     <button
                       disabled={submittingId === sq.id}
                       onClick={() => handleScheduleAction(sq.id, 'REJECTED')}

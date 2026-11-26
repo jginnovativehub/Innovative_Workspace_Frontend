@@ -114,10 +114,10 @@ export const WeeklyReportModal: React.FC<WeeklyReportModalProps> = ({
         </div>
 
         {/* Tab Selection */}
-        <div className="flex border-b border-gray-200 px-6 pt-2 bg-white/40">
+        <div className="flex border-b border-gray-200 px-4 sm:px-6 pt-2 bg-white/40 overflow-x-auto no-scrollbar shrink-0">
           <button
             onClick={() => setActiveTab('EDITOR')}
-            className={`pb-3 px-4 text-xs font-bold border-b-2 transition-all flex items-center space-x-2 ${
+            className={`pb-3 px-3 sm:px-4 text-xs font-bold border-b-2 transition-all flex items-center space-x-2 whitespace-nowrap shrink-0 ${
               activeTab === 'EDITOR'
                 ? 'border-indigo-600 text-indigo-700 font-bold'
                 : 'border-transparent text-gray-600 hover:text-gray-700'
@@ -129,7 +129,7 @@ export const WeeklyReportModal: React.FC<WeeklyReportModalProps> = ({
           {report && (
             <button
               onClick={() => setActiveTab('VERSIONS')}
-              className={`pb-3 px-4 text-xs font-bold border-b-2 transition-all flex items-center space-x-2 ${
+              className={`pb-3 px-3 sm:px-4 text-xs font-bold border-b-2 transition-all flex items-center space-x-2 whitespace-nowrap shrink-0 ${
                 activeTab === 'VERSIONS'
                   ? 'border-indigo-600 text-indigo-700 font-bold'
                   : 'border-transparent text-gray-600 hover:text-gray-700'
